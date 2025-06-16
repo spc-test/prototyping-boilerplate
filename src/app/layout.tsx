@@ -66,17 +66,6 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <style jsx global>{`
-          @font-face {
-            font-family: 'JetBrains Sans';
-            src: url('/fonts/JetBrainsSans-Regular.ttf') format('truetype');
-            font-weight: 400;
-            font-style: normal;
-            font-display: swap;
-          }
-        `}</style>
-      </head>
       <body
         className={cn(
           "min-h-screen bg-background antialiased",
