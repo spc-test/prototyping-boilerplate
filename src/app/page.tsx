@@ -67,7 +67,8 @@ export default function Home() {
           style={{ 
             color: '#5D6889',
             opacity: isVisible ? 1 : 0,
-            transform: `translateY(${translateY}px)`
+            transform: `translateY(${translateY}px)`,
+            fontFamily: 'JetBrains Sans, sans-serif'
           }}
         >
           {loadingPhrases[currentPhraseIndex]}
