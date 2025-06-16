@@ -63,7 +63,7 @@ export default function Home() {
       />
       <div className="fixed inset-0 flex items-center justify-center pointer-events-none">
         <h1 
-          className="text-2xl font-normal text-center transition-all duration-300 ease-in-out"
+          className="text-base font-normal text-center transition-all duration-300 ease-in-out"
           style={{ 
             color: '#5D6889',
             opacity: isVisible ? 1 : 0,
