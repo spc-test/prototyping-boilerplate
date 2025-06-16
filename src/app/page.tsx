@@ -4,11 +4,11 @@ import animationData from "../../public/animations/blobs-animation-flow-transpar
 export default function Home() {
   return (
     <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: '#F7F7FF' }}>
-      <div className="max-w-md">
+      <div className="max-w-4xl">
         <LottieAnimation
           animationData={animationData}
-          width={400}
-          height={360}
+          width={800}
+          height={720}
           loop={true}
           autoplay={true}
           speed={1}
@@ -20,7 +20,7 @@ export default function Home() {
       />
       <div className="fixed inset-0 flex items-center justify-center pointer-events-none">
         <h1 
-          className="text-2xl font-semibold text-center"
+          className="text-2xl font-normal text-center"
           style={{ color: '#5D6889' }}
         >
           Creating environment
