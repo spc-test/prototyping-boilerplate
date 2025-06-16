@@ -3,7 +3,7 @@ import animationData from "../../public/animations/blobs-animation-flow-transpar
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
+    <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: '#F7F7FF' }}>
       <div className="max-w-md">
         <LottieAnimation
           animationData={animationData}
