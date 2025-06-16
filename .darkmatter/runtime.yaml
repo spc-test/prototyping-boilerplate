@@ -1,0 +1,4 @@
+before-command: npm install && cp .env.example .env.local
+preview-command: npm run dev
+forward-ports:
+  - 3000
