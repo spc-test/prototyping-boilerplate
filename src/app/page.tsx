@@ -13,17 +13,24 @@ const loadingPhrases = [
 export default function Home() {
   const [currentPhraseIndex, setCurrentPhraseIndex] = useState(0)
   const [isVisible, setIsVisible] = useState(true)
+  const [translateY, setTranslateY] = useState(0)
 
   useEffect(() => {
     const changePhrase = () => {
-      // Fade out
+      // Fade out with downward movement
       setIsVisible(false)
+      setTranslateY(10)
       
       // Change phrase after fade out completes
       setTimeout(() => {
         setCurrentPhraseIndex((prevIndex) => (prevIndex + 1) % loadingPhrases.length)
-        // Fade in
-        setIsVisible(true)
+        // Start fade in with upward position
+        setTranslateY(-10)
+        // Fade in and move to center
+        setTimeout(() => {
+          setIsVisible(true)
+          setTranslateY(0)
+        }, 50) // Small delay to ensure the translateY is set before fade in
       }, 300) // 300ms for fade out duration
       
       // Random delay between 2-5 seconds (2000-5000ms)
@@ -56,10 +63,11 @@ export default function Home() {
       />
       <div className="fixed inset-0 flex items-center justify-center pointer-events-none">
         <h1 
-          className="text-2xl font-normal text-center transition-opacity duration-300 ease-in-out"
+          className="text-2xl font-normal text-center transition-all duration-300 ease-in-out"
           style={{ 
             color: '#5D6889',
-            opacity: isVisible ? 1 : 0
+            opacity: isVisible ? 1 : 0,
+            transform: `translateY(${translateY}px)`
           }}
         >
           {loadingPhrases[currentPhraseIndex]}
