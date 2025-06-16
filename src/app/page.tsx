@@ -12,10 +12,19 @@ const loadingPhrases = [
 
 export default function Home() {
   const [currentPhraseIndex, setCurrentPhraseIndex] = useState(0)
+  const [isVisible, setIsVisible] = useState(true)
 
   useEffect(() => {
     const changePhrase = () => {
-      setCurrentPhraseIndex((prevIndex) => (prevIndex + 1) % loadingPhrases.length)
+      // Fade out
+      setIsVisible(false)
+      
+      // Change phrase after fade out completes
+      setTimeout(() => {
+        setCurrentPhraseIndex((prevIndex) => (prevIndex + 1) % loadingPhrases.length)
+        // Fade in
+        setIsVisible(true)
+      }, 300) // 300ms for fade out duration
       
       // Random delay between 2-5 seconds (2000-5000ms)
       const randomDelay = Math.random() * 3000 + 2000
@@ -47,8 +56,11 @@ export default function Home() {
       />
       <div className="fixed inset-0 flex items-center justify-center pointer-events-none">
         <h1 
-          className="text-2xl font-normal text-center"
-          style={{ color: '#5D6889' }}
+          className="text-2xl font-normal text-center transition-opacity duration-300 ease-in-out"
+          style={{ 
+            color: '#5D6889',
+            opacity: isVisible ? 1 : 0
+          }}
         >
           {loadingPhrases[currentPhraseIndex]}
         </h1>
