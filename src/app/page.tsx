@@ -15,8 +15,8 @@ export default function Home() {
         />
       </div>
       <div 
-        className="fixed inset-0 bg-white/10 backdrop-blur-[30px] pointer-events-none"
-        style={{ backdropFilter: 'blur(30px)' }}
+        className="fixed inset-0 bg-white/10 backdrop-blur-[40px] pointer-events-none"
+        style={{ backdropFilter: 'blur(40px)' }}
       />
       <div className="fixed inset-0 flex items-center justify-center pointer-events-none">
         <h1 
