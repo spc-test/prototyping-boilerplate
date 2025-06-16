@@ -18,6 +18,14 @@ export default function Home() {
         className="fixed inset-0 bg-white/10 backdrop-blur-[30px] pointer-events-none"
         style={{ backdropFilter: 'blur(30px)' }}
       />
+      <div className="fixed inset-0 flex items-center justify-center pointer-events-none">
+        <h1 
+          className="text-2xl font-semibold text-center"
+          style={{ color: '#5D6889' }}
+        >
+          Creating environment
+        </h1>
+      </div>
     </div>
   )
 }
