@@ -20,6 +20,7 @@ export default function VioletBlock() {
   const [secondCurrentWordIndex, setSecondCurrentWordIndex] = useState(0);
   const [secondShowCursor, setSecondShowCursor] = useState(true);
   const [showMatches, setShowMatches] = useState(false);
+  const [showFirstMatches, setShowFirstMatches] = useState(false);
 
   const resetAnimation = () => {
     setDisplayedWords([]);
@@ -33,6 +34,7 @@ export default function VioletBlock() {
     setSecondCurrentWordIndex(0);
     setSecondShowCursor(true);
     setShowMatches(false);
+    setShowFirstMatches(false);
   };
 
   useEffect(() => {
@@ -43,8 +45,9 @@ export default function VioletBlock() {
       }, 100); // Typing speed - 100ms per word
       return () => clearTimeout(timer);
     } else {
-      // Animation finished, hide cursor and mark first animation complete
+      // Animation finished, hide cursor, show matches, and mark first animation complete
       setShowCursor(false);
+      setShowFirstMatches(true);
       setFirstAnimationComplete(true);
     }
   }, [currentWordIndex, words]);
@@ -121,6 +124,16 @@ export default function VioletBlock() {
                 {displayedWords.join(' ')}
                 {showCursor && <span className="text-black">●</span>}
               </p>
+              {showFirstMatches && (
+                <div className="flex items-center gap-1 mt-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none">
+                    <g opacity="0.5">
+                      <path d="M5.45526 2.59064C3.87371 2.59064 2.59162 3.87274 2.59162 5.45428C2.59162 7.03582 3.87371 8.31792 5.45526 8.31792C6.30333 8.31792 7.06488 7.94977 7.58982 7.36327C8.04351 6.85637 8.31889 6.18797 8.31889 5.45428C8.31889 3.87274 7.0368 2.59064 5.45526 2.59064ZM1.77344 5.45428C1.77344 3.42087 3.42184 1.77246 5.45526 1.77246C7.48867 1.77246 9.13707 3.42087 9.13707 5.45428C9.13707 6.25729 8.87961 7.00087 8.44313 7.60604L10.3657 9.52865C10.5255 9.6884 10.5255 9.94743 10.3657 10.1072C10.206 10.2669 9.94695 10.2669 9.78719 10.1072L7.89327 8.21327C7.24419 8.78718 6.39027 9.1361 5.45526 9.1361C3.42184 9.1361 1.77344 7.48769 1.77344 5.45428Z" fill="#0C0C0D"/>
+                    </g>
+                  </svg>
+                  <span className="text-gray-500 text-xs">Found 0 matches</span>
+                </div>
+              )}
             </div>
           )}
           {showSecondBlock && (
