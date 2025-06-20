@@ -16,15 +16,21 @@ export default function VioletBlock() {
         setCurrentWordIndex(currentWordIndex + 1);
       }, 100); // Typing speed - 100ms per word
       return () => clearTimeout(timer);
+    } else {
+      // Animation finished, hide cursor
+      setShowCursor(false);
     }
   }, [currentWordIndex, words]);
 
   useEffect(() => {
-    const cursorTimer = setInterval(() => {
-      setShowCursor(prev => !prev);
-    }, 500); // Cursor blink speed
-    return () => clearInterval(cursorTimer);
-  }, []);
+    // Only blink cursor while animation is in progress
+    if (currentWordIndex < words.length) {
+      const cursorTimer = setInterval(() => {
+        setShowCursor(prev => !prev);
+      }, 500); // Cursor blink speed
+      return () => clearInterval(cursorTimer);
+    }
+  }, [currentWordIndex, words.length]);
 
   return (
     <div className="w-[450px] h-[140px] bg-white border border-[#e5d9ff] rounded-xl shadow-sm overflow-hidden flex flex-col">
