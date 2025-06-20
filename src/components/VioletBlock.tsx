@@ -113,7 +113,7 @@ export default function VioletBlock() {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <div className="w-[450px] h-[190px] bg-white border border-[#e5d9ff] rounded-xl shadow-sm overflow-hidden flex flex-col">
+      <div className="w-[450px] h-[195px] bg-white border border-[#e5d9ff] rounded-xl shadow-sm overflow-hidden flex flex-col">
         <div className="bg-[#8b5cf6] px-5 py-3">
           <h3 className="text-white font-medium text-sm">
             Exploring the codebase
