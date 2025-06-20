@@ -14,7 +14,7 @@ export default function VioletBlock() {
   const [showSecondBlock, setShowSecondBlock] = useState(false);
   const [isSliding, setIsSliding] = useState(false);
   const [showFirstBlock, setShowFirstBlock] = useState(true);
-  
+
   // Second block typing animation states
   const [secondDisplayedWords, setSecondDisplayedWords] = useState<string[]>([]);
   const [secondCurrentWordIndex, setSecondCurrentWordIndex] = useState(0);
@@ -113,7 +113,7 @@ export default function VioletBlock() {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <div className="w-[450px] h-[140px] bg-white border border-[#e5d9ff] rounded-xl shadow-sm overflow-hidden flex flex-col">
+      <div className="w-[450px] h-[190px] bg-white border border-[#e5d9ff] rounded-xl shadow-sm overflow-hidden flex flex-col">
         <div className="bg-[#8b5cf6] px-5 py-3">
           <h3 className="text-white font-medium text-sm">
             Exploring the codebase
@@ -121,7 +121,7 @@ export default function VioletBlock() {
         </div>
         <div className="flex-1 relative overflow-hidden">
           {showFirstBlock && (
-            <div 
+            <div
               className={`px-5 py-4 absolute left-0 right-0 min-h-full transition-all duration-500 ease-in-out ${
                 isSliding ? 'bottom-full' : 'bottom-0'
               }`}
@@ -143,7 +143,7 @@ export default function VioletBlock() {
             </div>
           )}
           {showSecondBlock && (
-            <div 
+            <div
               className={`px-5 py-4 absolute left-0 right-0 min-h-full transition-all duration-500 ease-in-out ${
                 isSliding ? 'bottom-0' : '-bottom-full'
               }`}
