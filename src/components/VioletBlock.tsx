@@ -76,8 +76,8 @@ export default function VioletBlock() {
         <div className="flex-1 relative overflow-hidden">
           {showFirstBlock && (
             <div 
-              className={`px-5 py-4 absolute left-0 right-0 bottom-0 min-h-full transition-all duration-500 ease-in-out ${
-                isSliding ? '-top-full' : ''
+              className={`px-5 py-4 absolute left-0 right-0 min-h-full transition-all duration-500 ease-in-out ${
+                isSliding ? 'bottom-full' : 'bottom-0'
               }`}
             >
               <p className="text-[#374151] text-sm leading-relaxed">
