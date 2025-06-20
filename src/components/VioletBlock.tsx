@@ -34,7 +34,7 @@ export default function VioletBlock() {
         </h3>
       </div>
       <div className="flex-1 relative overflow-hidden">
-        <div className="px-5 py-4 absolute bottom-0 left-0 right-0">
+        <div className="px-5 py-4 absolute bottom-0 left-0 right-0 min-h-full">
           <p className="text-[#374151] text-sm leading-relaxed">
             {displayedWords.join(' ')}
             {showCursor && <span className="text-black">●</span>}
