@@ -62,9 +62,9 @@ export default function VioletBlock() {
     }
   }, [currentWordIndex, words.length]);
 
-  // Show second block after first animation completes
+  // Show second block after first animation completes and matches text is shown
   useEffect(() => {
-    if (firstAnimationComplete) {
+    if (showFirstMatches) {
       const timer = setTimeout(() => {
         setShowSecondBlock(true);
         // Start sliding animation after a brief delay
@@ -75,10 +75,10 @@ export default function VioletBlock() {
             setShowFirstBlock(false);
           }, 500); // Match the CSS transition duration
         }, 100);
-      }, 500); // Wait 500ms after first animation completes
+      }, 3000); // Wait 3 seconds after matches text appears
       return () => clearTimeout(timer);
     }
-  }, [firstAnimationComplete]);
+  }, [showFirstMatches]);
 
   // Second block typing animation
   useEffect(() => {
