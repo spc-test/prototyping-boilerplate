@@ -14,7 +14,7 @@ export default function VioletBlock() {
       const timer = setTimeout(() => {
         setDisplayedWords(words.slice(0, currentWordIndex + 1));
         setCurrentWordIndex(currentWordIndex + 1);
-      }, 200); // Typing speed - 200ms per word
+      }, 100); // Typing speed - 100ms per word
       return () => clearTimeout(timer);
     }
   }, [currentWordIndex, words]);
