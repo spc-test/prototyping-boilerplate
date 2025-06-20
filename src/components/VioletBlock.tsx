@@ -4,7 +4,9 @@ import React, { useState, useEffect } from 'react';
 
 export default function VioletBlock() {
   const fullText = "I'll help you add a \"View Demo\" button with a book icon above the user avatar. Let me first explore the current navigation structure to understand where the user avatar is located and how to implement this feature.";
+  const secondText = "Perfect! I've successfully added the \"View Demo\" button with a book icon above the user avatar in the navigation. The button is now positioned correctly and styled to match the existing design system.";
   const words = fullText.split(' ');
+  const secondWords = secondText.split(' ');
   const [displayedWords, setDisplayedWords] = useState<string[]>([]);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [showCursor, setShowCursor] = useState(true);
@@ -12,6 +14,11 @@ export default function VioletBlock() {
   const [showSecondBlock, setShowSecondBlock] = useState(false);
   const [isSliding, setIsSliding] = useState(false);
   const [showFirstBlock, setShowFirstBlock] = useState(true);
+  
+  // Second block typing animation states
+  const [secondDisplayedWords, setSecondDisplayedWords] = useState<string[]>([]);
+  const [secondCurrentWordIndex, setSecondCurrentWordIndex] = useState(0);
+  const [secondShowCursor, setSecondShowCursor] = useState(true);
 
   const resetAnimation = () => {
     setDisplayedWords([]);
@@ -21,6 +28,9 @@ export default function VioletBlock() {
     setShowSecondBlock(false);
     setIsSliding(false);
     setShowFirstBlock(true);
+    setSecondDisplayedWords([]);
+    setSecondCurrentWordIndex(0);
+    setSecondShowCursor(true);
   };
 
   useEffect(() => {
@@ -65,6 +75,30 @@ export default function VioletBlock() {
     }
   }, [firstAnimationComplete]);
 
+  // Second block typing animation
+  useEffect(() => {
+    if (isSliding && secondCurrentWordIndex < secondWords.length) {
+      const timer = setTimeout(() => {
+        setSecondDisplayedWords(secondWords.slice(0, secondCurrentWordIndex + 1));
+        setSecondCurrentWordIndex(secondCurrentWordIndex + 1);
+      }, 100); // Same typing speed as first block
+      return () => clearTimeout(timer);
+    } else if (isSliding && secondCurrentWordIndex >= secondWords.length) {
+      // Second animation finished, hide cursor
+      setSecondShowCursor(false);
+    }
+  }, [isSliding, secondCurrentWordIndex, secondWords]);
+
+  // Second block cursor blinking
+  useEffect(() => {
+    if (isSliding && secondCurrentWordIndex < secondWords.length) {
+      const cursorTimer = setInterval(() => {
+        setSecondShowCursor(prev => !prev);
+      }, 500); // Same cursor blink speed
+      return () => clearInterval(cursorTimer);
+    }
+  }, [isSliding, secondCurrentWordIndex, secondWords.length]);
+
   return (
     <div className="flex flex-col items-center gap-4">
       <div className="w-[450px] h-[140px] bg-white border border-[#e5d9ff] rounded-xl shadow-sm overflow-hidden flex flex-col">
@@ -93,7 +127,8 @@ export default function VioletBlock() {
               }`}
             >
               <p className="text-[#374151] text-sm leading-relaxed">
-                {displayedWords.join(' ')}
+                {secondDisplayedWords.join(' ')}
+                {secondShowCursor && <span className="text-black">●</span>}
               </p>
             </div>
           )}
