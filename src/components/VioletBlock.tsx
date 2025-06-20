@@ -45,10 +45,13 @@ export default function VioletBlock() {
       }, 100); // Typing speed - 100ms per word
       return () => clearTimeout(timer);
     } else {
-      // Animation finished, hide cursor, show matches, and mark first animation complete
-      setShowCursor(false);
-      setShowFirstMatches(true);
-      setFirstAnimationComplete(true);
+      // Animation finished, wait 1 second before hiding cursor and showing matches
+      const delayTimer = setTimeout(() => {
+        setShowCursor(false);
+        setShowFirstMatches(true);
+        setFirstAnimationComplete(true);
+      }, 1000); // 1 second delay
+      return () => clearTimeout(delayTimer);
     }
   }, [currentWordIndex, words]);
 
@@ -89,9 +92,12 @@ export default function VioletBlock() {
       }, 100); // Same typing speed as first block
       return () => clearTimeout(timer);
     } else if (isSliding && secondCurrentWordIndex >= secondWords.length) {
-      // Second animation finished, hide cursor and show matches
-      setSecondShowCursor(false);
-      setShowMatches(true);
+      // Second animation finished, wait 1 second before hiding cursor and showing matches
+      const delayTimer = setTimeout(() => {
+        setSecondShowCursor(false);
+        setShowMatches(true);
+      }, 1000); // 1 second delay
+      return () => clearTimeout(delayTimer);
     }
   }, [isSliding, secondCurrentWordIndex, secondWords]);
 
