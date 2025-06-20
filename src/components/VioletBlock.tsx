@@ -4,19 +4,20 @@ import React, { useState, useEffect } from 'react';
 
 export default function VioletBlock() {
   const fullText = "I'll help you add a \"View Demo\" button with a book icon above the user avatar. Let me first explore the current navigation structure to understand where the user avatar is located and how to implement this feature.";
-  const [displayedText, setDisplayedText] = useState('');
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const words = fullText.split(' ');
+  const [displayedWords, setDisplayedWords] = useState<string[]>([]);
+  const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [showCursor, setShowCursor] = useState(true);
 
   useEffect(() => {
-    if (currentIndex < fullText.length) {
+    if (currentWordIndex < words.length) {
       const timer = setTimeout(() => {
-        setDisplayedText(fullText.slice(0, currentIndex + 1));
-        setCurrentIndex(currentIndex + 1);
-      }, 50); // Typing speed - 50ms per character
+        setDisplayedWords(words.slice(0, currentWordIndex + 1));
+        setCurrentWordIndex(currentWordIndex + 1);
+      }, 200); // Typing speed - 200ms per word
       return () => clearTimeout(timer);
     }
-  }, [currentIndex, fullText]);
+  }, [currentWordIndex, words]);
 
   useEffect(() => {
     const cursorTimer = setInterval(() => {
@@ -35,7 +36,7 @@ export default function VioletBlock() {
       <div className="flex-1 relative overflow-hidden">
         <div className="px-5 py-4 absolute bottom-0 left-0 right-0">
           <p className="text-[#374151] text-sm leading-relaxed">
-            {displayedText}
+            {displayedWords.join(' ')}
             {showCursor && <span className="text-black">●</span>}
           </p>
         </div>
