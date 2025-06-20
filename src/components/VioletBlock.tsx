@@ -8,6 +8,10 @@ export default function VioletBlock() {
   const [displayedWords, setDisplayedWords] = useState<string[]>([]);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [showCursor, setShowCursor] = useState(true);
+  const [firstAnimationComplete, setFirstAnimationComplete] = useState(false);
+  const [showSecondBlock, setShowSecondBlock] = useState(false);
+  const [isSliding, setIsSliding] = useState(false);
+  const [showFirstBlock, setShowFirstBlock] = useState(true);
 
   useEffect(() => {
     if (currentWordIndex < words.length) {
@@ -17,8 +21,9 @@ export default function VioletBlock() {
       }, 100); // Typing speed - 100ms per word
       return () => clearTimeout(timer);
     } else {
-      // Animation finished, hide cursor
+      // Animation finished, hide cursor and mark first animation complete
       setShowCursor(false);
+      setFirstAnimationComplete(true);
     }
   }, [currentWordIndex, words]);
 
@@ -32,6 +37,24 @@ export default function VioletBlock() {
     }
   }, [currentWordIndex, words.length]);
 
+  // Show second block after first animation completes
+  useEffect(() => {
+    if (firstAnimationComplete) {
+      const timer = setTimeout(() => {
+        setShowSecondBlock(true);
+        // Start sliding animation after a brief delay
+        setTimeout(() => {
+          setIsSliding(true);
+          // Remove first block after sliding animation completes
+          setTimeout(() => {
+            setShowFirstBlock(false);
+          }, 500); // Match the CSS transition duration
+        }, 100);
+      }, 500); // Wait 500ms after first animation completes
+      return () => clearTimeout(timer);
+    }
+  }, [firstAnimationComplete]);
+
   return (
     <div className="w-[450px] h-[140px] bg-white border border-[#e5d9ff] rounded-xl shadow-sm overflow-hidden flex flex-col">
       <div className="bg-[#8b5cf6] px-5 py-3">
@@ -40,12 +63,29 @@ export default function VioletBlock() {
         </h3>
       </div>
       <div className="flex-1 relative overflow-hidden">
-        <div className="px-5 py-4 absolute bottom-0 left-0 right-0 min-h-full">
-          <p className="text-[#374151] text-sm leading-relaxed">
-            {displayedWords.join(' ')}
-            {showCursor && <span className="text-black">●</span>}
-          </p>
-        </div>
+        {showFirstBlock && (
+          <div 
+            className={`px-5 py-4 absolute left-0 right-0 min-h-full transition-all duration-500 ease-in-out ${
+              isSliding ? '-bottom-full' : 'bottom-0'
+            }`}
+          >
+            <p className="text-[#374151] text-sm leading-relaxed">
+              {displayedWords.join(' ')}
+              {showCursor && <span className="text-black">●</span>}
+            </p>
+          </div>
+        )}
+        {showSecondBlock && (
+          <div 
+            className={`px-5 py-4 absolute left-0 right-0 min-h-full transition-all duration-500 ease-in-out ${
+              isSliding ? 'bottom-0' : '-bottom-full'
+            }`}
+          >
+            <p className="text-[#374151] text-sm leading-relaxed">
+              {displayedWords.join(' ')}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
