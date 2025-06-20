@@ -77,7 +77,7 @@ export default function VioletBlock() {
           {showFirstBlock && (
             <div 
               className={`px-5 py-4 absolute left-0 right-0 min-h-full transition-all duration-500 ease-in-out ${
-                isSliding ? '-bottom-full' : 'bottom-0'
+                isSliding ? '-top-full' : 'top-0'
               }`}
             >
               <p className="text-[#374151] text-sm leading-relaxed">
