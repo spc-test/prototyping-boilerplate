@@ -1,17 +1,10 @@
 import "@/styles/globals.css"
 
 import type { Metadata, Viewport } from "next"
-import { IBM_Plex_Sans } from "next/font/google"
 
 import { siteConfig } from "@/config/site"
 import { cn } from "@/lib/utils"
 import { ThemeProvider } from "@/components/theme-provider"
-
-const ibmPlexSans = IBM_Plex_Sans({ 
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-ibm-plex-sans"
-})
 
 interface RootLayoutProps {
   children: React.ReactNode
@@ -73,8 +66,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
       <head />
       <body
         className={cn(
-          "min-h-screen bg-background antialiased font-sans",
-          ibmPlexSans.variable
+          "min-h-screen bg-background antialiased font-sans"
         )}
       >
         <ThemeProvider

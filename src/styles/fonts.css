@@ -1,0 +1,8 @@
+@font-face {
+  font-family: 'JetBrains Sans';
+  src: url('/fonts/JetBrainsSans[wght].woff2') format('woff2-variations'),
+       url('/fonts/JetBrainsSans[wght].ttf') format('truetype-variations');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
