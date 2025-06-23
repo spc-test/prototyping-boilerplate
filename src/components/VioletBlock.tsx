@@ -14,6 +14,7 @@ export default function VioletBlock() {
   const [showSecondBlock, setShowSecondBlock] = useState(false);
   const [isSliding, setIsSliding] = useState(false);
   const [showFirstBlock, setShowFirstBlock] = useState(true);
+  const [containerHeight, setContainerHeight] = useState(60);
 
   // Second block typing animation states
   const [secondDisplayedWords, setSecondDisplayedWords] = useState<string[]>([]);
@@ -35,12 +36,31 @@ export default function VioletBlock() {
     setSecondShowCursor(true);
     setShowMatches(false);
     setShowFirstMatches(false);
+    setContainerHeight(60);
+  };
+
+  // Function to estimate text height based on content
+  const estimateTextHeight = (text: string) => {
+    const baseHeight = 60; // Header height + padding
+    const lineHeight = 20; // Approximate line height in pixels
+    const containerWidth = 370; // Container width minus padding (450 - 80)
+    const avgCharWidth = 7; // Approximate character width in pixels
+    const charsPerLine = Math.floor(containerWidth / avgCharWidth);
+    const estimatedLines = Math.ceil(text.length / charsPerLine);
+    return baseHeight + (estimatedLines * lineHeight) + 20; // Extra padding
   };
 
   useEffect(() => {
     if (currentWordIndex < words.length) {
       const timer = setTimeout(() => {
-        setDisplayedWords(words.slice(0, currentWordIndex + 1));
+        const newWords = words.slice(0, currentWordIndex + 1);
+        setDisplayedWords(newWords);
+        
+        // Calculate and update container height smoothly
+        const currentText = newWords.join(' ');
+        const newHeight = estimateTextHeight(currentText);
+        setContainerHeight(newHeight);
+        
         setCurrentWordIndex(currentWordIndex + 1);
       }, 100); // Typing speed - 100ms per word
       return () => clearTimeout(timer);
@@ -87,7 +107,14 @@ export default function VioletBlock() {
   useEffect(() => {
     if (isSliding && secondCurrentWordIndex < secondWords.length) {
       const timer = setTimeout(() => {
-        setSecondDisplayedWords(secondWords.slice(0, secondCurrentWordIndex + 1));
+        const newSecondWords = secondWords.slice(0, secondCurrentWordIndex + 1);
+        setSecondDisplayedWords(newSecondWords);
+        
+        // Calculate and update container height for second text
+        const currentSecondText = newSecondWords.join(' ');
+        const newHeight = estimateTextHeight(currentSecondText);
+        setContainerHeight(newHeight);
+        
         setSecondCurrentWordIndex(secondCurrentWordIndex + 1);
       }, 100); // Same typing speed as first block
       return () => clearTimeout(timer);
@@ -113,7 +140,10 @@ export default function VioletBlock() {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <div className="w-[450px] min-h-[60px] bg-white border border-[#e5d9ff] rounded-xl shadow-sm overflow-hidden flex flex-col transition-[height,min-height] duration-500 ease-out will-change-[height]">
+      <div 
+        className="w-[450px] bg-white border border-[#e5d9ff] rounded-xl shadow-sm overflow-hidden flex flex-col transition-[height] duration-300 ease-out will-change-[height]"
+        style={{ height: `${containerHeight}px` }}
+      >
         <div className="bg-[#8b5cf6] px-5 py-3">
           <h3 className="text-white font-medium text-sm">
             Exploring the codebase
