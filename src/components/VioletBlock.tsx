@@ -171,7 +171,6 @@ export default function VioletBlock() {
             >
               <p className="text-[#374151] text-sm leading-relaxed">
                 {displayedWords.join(' ')}
-                {showCursor && <span className="text-black">●</span>}
               </p>
               {showFirstMatches && (
                 <div className="flex items-center gap-1 mt-2">
@@ -193,7 +192,6 @@ export default function VioletBlock() {
             >
               <p className="text-[#374151] text-sm leading-relaxed">
                 {secondDisplayedWords.join(' ')}
-                {secondShowCursor && <span className="text-black">●</span>}
               </p>
               {showMatches && (
                 <div className="flex items-center gap-1 mt-2">
