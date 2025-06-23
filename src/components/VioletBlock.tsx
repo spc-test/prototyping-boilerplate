@@ -113,17 +113,17 @@ export default function VioletBlock() {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <div className="w-[450px] h-[195px] bg-white border border-[#e5d9ff] rounded-xl shadow-sm overflow-hidden flex flex-col">
+      <div className="w-[450px] min-h-[195px] bg-white border border-[#e5d9ff] rounded-xl shadow-sm overflow-hidden flex flex-col transition-all duration-300 ease-in-out">
         <div className="bg-[#8b5cf6] px-5 py-3">
           <h3 className="text-white font-medium text-sm">
             Exploring the codebase
           </h3>
         </div>
-        <div className="flex-1 relative overflow-hidden">
+        <div className="flex-1 relative">
           {showFirstBlock && (
             <div
-              className={`px-5 py-4 absolute left-0 right-0 min-h-full transition-all duration-500 ease-in-out ${
-                isSliding ? 'bottom-full' : 'bottom-0'
+              className={`px-5 py-4 transition-all duration-500 ease-in-out ${
+                isSliding ? 'transform -translate-y-full opacity-0' : 'transform translate-y-0 opacity-100'
               }`}
             >
               <p className="text-[#374151] text-sm leading-relaxed">
@@ -144,8 +144,8 @@ export default function VioletBlock() {
           )}
           {showSecondBlock && (
             <div
-              className={`px-5 py-4 absolute left-0 right-0 min-h-full transition-all duration-500 ease-in-out ${
-                isSliding ? 'bottom-0' : '-bottom-full'
+              className={`px-5 py-4 transition-all duration-500 ease-in-out ${
+                isSliding ? 'transform translate-y-0 opacity-100' : 'transform translate-y-full opacity-0'
               }`}
             >
               <p className="text-[#374151] text-sm leading-relaxed">
