@@ -41,13 +41,18 @@ export default function VioletBlock() {
 
   // Function to estimate text height based on content
   const estimateTextHeight = (text: string) => {
-    const baseHeight = 60; // Header height + padding
-    const lineHeight = 20; // Approximate line height in pixels
-    const containerWidth = 370; // Container width minus padding (450 - 80)
-    const avgCharWidth = 7; // Approximate character width in pixels
+    const headerHeight = 44; // Purple header height
+    const topPadding = 16; // py-4 = 16px top padding
+    const bottomPadding = 24; // Extra bottom padding for matches text
+    const lineHeight = 24; // More accurate line height for text-sm leading-relaxed
+    const containerWidth = 370; // Container width minus padding (450 - 80px for px-5)
+    const avgCharWidth = 6.5; // More accurate character width for text-sm
     const charsPerLine = Math.floor(containerWidth / avgCharWidth);
-    const estimatedLines = Math.ceil(text.length / charsPerLine);
-    return baseHeight + (estimatedLines * lineHeight) + 20; // Extra padding
+    const estimatedLines = Math.max(1, Math.ceil(text.length / charsPerLine));
+    const textHeight = estimatedLines * lineHeight;
+    const matchesHeight = 20; // Height for "Found 0 matches" line
+    
+    return headerHeight + topPadding + textHeight + matchesHeight + bottomPadding;
   };
 
   useEffect(() => {
