@@ -40,17 +40,17 @@ export default function VioletBlock() {
   };
 
   // Function to estimate text height based on content
-  const estimateTextHeight = (text: string) => {
+  const estimateTextHeight = (text: string, includeMatches: boolean = false) => {
     const headerHeight = 44; // Purple header height
     const topPadding = 16; // py-4 = 16px top padding
-    const bottomPadding = 24; // Extra bottom padding for matches text
+    const bottomPadding = 16; // Base bottom padding
     const lineHeight = 24; // More accurate line height for text-sm leading-relaxed
     const containerWidth = 370; // Container width minus padding (450 - 80px for px-5)
     const avgCharWidth = 6.5; // More accurate character width for text-sm
     const charsPerLine = Math.floor(containerWidth / avgCharWidth);
     const estimatedLines = Math.max(1, Math.ceil(text.length / charsPerLine));
     const textHeight = estimatedLines * lineHeight;
-    const matchesHeight = 20; // Height for "Found 0 matches" line
+    const matchesHeight = includeMatches ? 28 : 0; // Height for "Found 0 matches" line with margin
     
     return headerHeight + topPadding + textHeight + matchesHeight + bottomPadding;
   };
@@ -63,7 +63,7 @@ export default function VioletBlock() {
         
         // Calculate and update container height smoothly
         const currentText = newWords.join(' ');
-        const newHeight = estimateTextHeight(currentText);
+        const newHeight = estimateTextHeight(currentText, false);
         setContainerHeight(newHeight);
         
         setCurrentWordIndex(currentWordIndex + 1);
@@ -75,6 +75,10 @@ export default function VioletBlock() {
         setShowCursor(false);
         setShowFirstMatches(true);
         setFirstAnimationComplete(true);
+        // Update height to include matches text
+        const finalText = words.join(' ');
+        const newHeight = estimateTextHeight(finalText, true);
+        setContainerHeight(newHeight);
       }, 1000); // 1 second delay
       return () => clearTimeout(delayTimer);
     }
@@ -117,7 +121,7 @@ export default function VioletBlock() {
         
         // Calculate and update container height for second text
         const currentSecondText = newSecondWords.join(' ');
-        const newHeight = estimateTextHeight(currentSecondText);
+        const newHeight = estimateTextHeight(currentSecondText, false);
         setContainerHeight(newHeight);
         
         setSecondCurrentWordIndex(secondCurrentWordIndex + 1);
@@ -128,6 +132,10 @@ export default function VioletBlock() {
       const delayTimer = setTimeout(() => {
         setSecondShowCursor(false);
         setShowMatches(true);
+        // Update height to include matches text
+        const finalSecondText = secondWords.join(' ');
+        const newHeight = estimateTextHeight(finalSecondText, true);
+        setContainerHeight(newHeight);
       }, 1000); // 1 second delay
       return () => clearTimeout(delayTimer);
     }
