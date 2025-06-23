@@ -5,8 +5,10 @@ import React, { useState, useEffect } from 'react';
 export default function VioletBlock() {
   const fullText = "I'll help you add a \"View Demo\" button with a book icon above the user avatar. Let me first explore the current navigation structure to understand where the user avatar is located and how to implement this feature.";
   const secondText = "Perfect! I've successfully added the \"View Demo\" button with a book icon above the user avatar in the navigation. The button is now positioned correctly and styled to match the existing design system.";
+  const thirdText = "Now let me verify that the changes don't introduce any type errors or break the existing functionality. I'll run a type check to ensure everything is working correctly.";
   const words = fullText.split(' ');
   const secondWords = secondText.split(' ');
+  const thirdWords = thirdText.split(' ');
   const [displayedWords, setDisplayedWords] = useState<string[]>([]);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [showCursor, setShowCursor] = useState(true);
@@ -23,6 +25,15 @@ export default function VioletBlock() {
   const [showMatches, setShowMatches] = useState(false);
   const [showFirstMatches, setShowFirstMatches] = useState(false);
 
+  // Third block typing animation states
+  const [showThirdBlock, setShowThirdBlock] = useState(false);
+  const [isSecondSliding, setIsSecondSliding] = useState(false);
+  const [showSecondBlockContent, setShowSecondBlockContent] = useState(true);
+  const [thirdDisplayedWords, setThirdDisplayedWords] = useState<string[]>([]);
+  const [thirdCurrentWordIndex, setThirdCurrentWordIndex] = useState(0);
+  const [thirdShowCursor, setThirdShowCursor] = useState(true);
+  const [showTypeCheck, setShowTypeCheck] = useState(false);
+
   const resetAnimation = () => {
     setDisplayedWords([]);
     setCurrentWordIndex(0);
@@ -36,6 +47,13 @@ export default function VioletBlock() {
     setSecondShowCursor(true);
     setShowMatches(false);
     setShowFirstMatches(false);
+    setShowThirdBlock(false);
+    setIsSecondSliding(false);
+    setShowSecondBlockContent(true);
+    setThirdDisplayedWords([]);
+    setThirdCurrentWordIndex(0);
+    setThirdShowCursor(true);
+    setShowTypeCheck(false);
     setContainerHeight(60);
   };
 
@@ -112,6 +130,24 @@ export default function VioletBlock() {
     }
   }, [showFirstMatches]);
 
+  // Show third block after second animation completes and matches text is shown
+  useEffect(() => {
+    if (showMatches) {
+      const timer = setTimeout(() => {
+        setShowThirdBlock(true);
+        // Start sliding animation after a brief delay
+        setTimeout(() => {
+          setIsSecondSliding(true);
+          // Remove second block after sliding animation completes
+          setTimeout(() => {
+            setShowSecondBlockContent(false);
+          }, 500); // Match the CSS transition duration
+        }, 100);
+      }, 3000); // Wait 3 seconds after matches text appears
+      return () => clearTimeout(timer);
+    }
+  }, [showMatches]);
+
   // Second block typing animation
   useEffect(() => {
     if (isSliding && secondCurrentWordIndex < secondWords.length) {
@@ -151,6 +187,45 @@ export default function VioletBlock() {
     }
   }, [isSliding, secondCurrentWordIndex, secondWords.length]);
 
+  // Third block typing animation
+  useEffect(() => {
+    if (isSecondSliding && thirdCurrentWordIndex < thirdWords.length) {
+      const timer = setTimeout(() => {
+        const newThirdWords = thirdWords.slice(0, thirdCurrentWordIndex + 1);
+        setThirdDisplayedWords(newThirdWords);
+        
+        // Calculate and update container height for third text
+        const currentThirdText = newThirdWords.join(' ');
+        const newHeight = estimateTextHeight(currentThirdText, false);
+        setContainerHeight(newHeight);
+        
+        setThirdCurrentWordIndex(thirdCurrentWordIndex + 1);
+      }, 100); // Same typing speed as other blocks
+      return () => clearTimeout(timer);
+    } else if (isSecondSliding && thirdCurrentWordIndex >= thirdWords.length) {
+      // Third animation finished, wait 1 second before hiding cursor and showing type check
+      const delayTimer = setTimeout(() => {
+        setThirdShowCursor(false);
+        setShowTypeCheck(true);
+        // Update height to include type check text
+        const finalThirdText = thirdWords.join(' ');
+        const newHeight = estimateTextHeight(finalThirdText, true);
+        setContainerHeight(newHeight);
+      }, 1000); // 1 second delay
+      return () => clearTimeout(delayTimer);
+    }
+  }, [isSecondSliding, thirdCurrentWordIndex, thirdWords]);
+
+  // Third block cursor blinking
+  useEffect(() => {
+    if (isSecondSliding && thirdCurrentWordIndex < thirdWords.length) {
+      const cursorTimer = setInterval(() => {
+        setThirdShowCursor(prev => !prev);
+      }, 500); // Same cursor blink speed
+      return () => clearInterval(cursorTimer);
+    }
+  }, [isSecondSliding, thirdCurrentWordIndex, thirdWords.length]);
+
   return (
     <div className="flex flex-col items-center gap-4">
       <div 
@@ -184,10 +259,12 @@ export default function VioletBlock() {
               )}
             </div>
           )}
-          {showSecondBlock && (
+          {showSecondBlock && showSecondBlockContent && (
             <div
               className={`px-5 py-4 transition-all duration-500 ease-in-out ${
                 isSliding ? 'transform translate-y-0 opacity-100' : 'transform translate-y-full opacity-0'
+              } ${
+                isSecondSliding ? 'transform -translate-y-full opacity-0' : ''
               }`}
             >
               <p className="text-[#374151] text-sm leading-relaxed">
@@ -201,6 +278,27 @@ export default function VioletBlock() {
                     </g>
                   </svg>
                   <span className="text-gray-500 text-xs">Found 0 matches</span>
+                </div>
+              )}
+            </div>
+          )}
+          {showThirdBlock && (
+            <div
+              className={`px-5 py-4 transition-all duration-500 ease-in-out ${
+                isSecondSliding ? 'transform translate-y-0 opacity-100' : 'transform translate-y-full opacity-0'
+              }`}
+            >
+              <p className="text-[#374151] text-sm leading-relaxed">
+                {thirdDisplayedWords.join(' ')}
+              </p>
+              {showTypeCheck && (
+                <div className="flex items-center gap-1 mt-2">
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g opacity="0.5">
+                      <path d="M1.77344 3.8184C1.77344 2.68873 2.68922 1.77295 3.81889 1.77295H8.18253C9.3122 1.77295 10.228 2.68873 10.228 3.8184V8.18204C10.228 9.31171 9.3122 10.2275 8.18253 10.2275H3.81889C2.68922 10.2275 1.77344 9.31171 1.77344 8.18204V3.8184ZM3.81889 2.59113C3.14109 2.59113 2.59162 3.1406 2.59162 3.8184V8.18204C2.59162 8.85984 3.14109 9.40931 3.81889 9.40931H8.18253C8.86033 9.40931 9.4098 8.85984 9.4098 8.18204V3.8184C9.4098 3.1406 8.86033 2.59113 8.18253 2.59113H3.81889ZM3.80235 4.62004C3.96211 4.46028 4.22113 4.46028 4.38089 4.62004L5.4718 5.71095C5.63156 5.87071 5.63156 6.12973 5.4718 6.28949L4.38089 7.3804C4.22113 7.54016 3.96211 7.54016 3.80235 7.3804C3.64259 7.22064 3.64259 6.96162 3.80235 6.80186L4.60399 6.00022L3.80235 5.19858C3.64259 5.03882 3.64259 4.7798 3.80235 4.62004ZM8.18253 7.50022H6.54616C6.32023 7.50022 6.13707 7.31707 6.13707 7.09113C6.13707 6.8652 6.32023 6.68204 6.54616 6.68204H8.18253C8.40846 6.68204 8.59162 6.8652 8.59162 7.09113C8.59162 7.31707 8.40846 7.50022 8.18253 7.50022Z" fill="black"/>
+                    </g>
+                  </svg>
+                  <span className="text-gray-500 text-xs">Running the command npm run type</span>
                 </div>
               )}
             </div>
