@@ -55,7 +55,7 @@ export default function VioletBlock() {
   };
 
   // Function to estimate text height based on content
-  const estimateTextHeight = (text: string, includeMatches: boolean = false, predictive: boolean = false) => {
+  const estimateTextHeight = (text: string, includeMatches: boolean = false) => {
     const headerHeight = 42; // Updated header height (increased by 10px)
     const topPadding = 10; // p-[10px] = 10px top padding
     const bottomPadding = 10; // p-[10px] = 10px bottom padding
@@ -65,9 +65,7 @@ export default function VioletBlock() {
     const charsPerLine = Math.floor(containerWidth / avgCharWidth);
     const estimatedLines = Math.max(1, Math.ceil(text.length / charsPerLine));
 
-    // Add predictive buffer - expand container ahead of typing
-    const bufferLines = predictive ? 0.5 : 0; // Add half a line buffer when being predictive
-    const textHeight = (estimatedLines + bufferLines) * lineHeight;
+    const textHeight = estimatedLines * lineHeight;
     const matchesHeight = includeMatches ? 28 : 0; // Height for "Found 0 matches" line with margin
 
     return headerHeight + topPadding + textHeight + matchesHeight + bottomPadding;
@@ -83,9 +81,9 @@ export default function VioletBlock() {
         const newWords = currentBlock.words.slice(0, currentWordIndex + 1);
         setDisplayedWords(newWords);
 
-        // Calculate and update container height predictively
+        // Calculate and update container height
         const currentText = newWords.join(' ');
-        const newHeight = estimateTextHeight(currentText, false, true);
+        const newHeight = estimateTextHeight(currentText, false);
         setContainerHeight(newHeight);
 
         setCurrentWordIndex(currentWordIndex + 1);
@@ -172,7 +170,7 @@ export default function VioletBlock() {
             </svg>
           </div>
         </div>
-        <div className="flex-1 relative">
+        <div className="flex-1 relative overflow-hidden">
           <div
             className={`p-[10px] ${
               isSliding ? 'transition-all duration-500 ease-in-out transform -translate-y-full opacity-0' : ''
