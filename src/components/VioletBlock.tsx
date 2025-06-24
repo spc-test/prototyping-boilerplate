@@ -93,7 +93,7 @@ export default function VioletBlock() {
           <div 
             className="pl-[10px]"
             style={{
-              color: '#55F',
+              color: '#5555FF',
               fontFamily: 'JetBrains Sans',
               fontSize: '12px',
               fontStyle: 'normal',
