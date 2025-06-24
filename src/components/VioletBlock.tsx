@@ -42,7 +42,16 @@ export default function VioletBlock() {
   const [showCursor, setShowCursor] = useState(true);
   const [showFooter, setShowFooter] = useState(false);
   const [isSliding, setIsSliding] = useState(false);
-  const [containerHeight, setContainerHeight] = useState(96);
+  // Function to calculate minimum height (header + padding + one line of text)
+  const getMinimumHeight = () => {
+    const headerHeight = 42;
+    const topPadding = 10;
+    const bottomPadding = 10;
+    const lineHeight = 24;
+    return headerHeight + topPadding + lineHeight + bottomPadding;
+  };
+
+  const [containerHeight, setContainerHeight] = useState(getMinimumHeight());
 
   const resetAnimation = () => {
     setCurrentBlockIndex(0);
@@ -51,7 +60,7 @@ export default function VioletBlock() {
     setShowCursor(true);
     setShowFooter(false);
     setIsSliding(false);
-    setContainerHeight(96);
+    setContainerHeight(getMinimumHeight());
   };
 
   // Function to estimate text height based on content
@@ -124,7 +133,7 @@ export default function VioletBlock() {
         setIsSliding(true);
         // Start shrinking container gradually during the sliding animation
         setTimeout(() => {
-          setContainerHeight(96); // Shrink to minimum height during slide
+          setContainerHeight(getMinimumHeight()); // Shrink to minimum height during slide
         }, 150); // Start shrinking 150ms after slide begins
         // After sliding animation completes, move to next block
         setTimeout(() => {
@@ -135,7 +144,7 @@ export default function VioletBlock() {
           setShowFooter(false);
           setIsSliding(false);
           // Reset container height immediately for new block without animation
-          setContainerHeight(96);
+          setContainerHeight(getMinimumHeight());
         }, 500); // Match the CSS transition duration
       }, 3000); // Wait 3 seconds after footer appears
       return () => clearTimeout(timer);
