@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { cornerSmoothing } from "@sanalabs/corner-smoothing";
 
 // Custom Chevron Icon Component
 const ChevronIcon = () => (
@@ -85,15 +84,13 @@ export default function VioletBlock() {
 
   const containerStyle = {
     borderRadius: "16px",
-    border: "1px solid rgba(85, 85, 255, 0.30)",
-    ...cornerSmoothing(16)
+    border: "1px solid rgba(85, 85, 255, 0.30)"
   };
 
   const headerStyle = {
     padding: "5px",
     borderRadius: "12px 12px 0px 0px",
-    background: "#F7F7FF",
-    ...cornerSmoothing(12, { onlyTop: true })
+    background: "#F7F7FF"
   };
 
   return (
