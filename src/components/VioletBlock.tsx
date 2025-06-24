@@ -142,7 +142,7 @@ export default function VioletBlock() {
   return (
     <div className="flex flex-col items-center gap-4">
       <div 
-        className="w-[450px] bg-white rounded-[16px] shadow-sm overflow-hidden flex flex-col transition-[height] duration-300 ease-out will-change-[height] p-[5px]"
+        className="w-[450px] bg-white rounded-[16px] shadow-sm overflow-hidden flex flex-col transition-[height] duration-300 ease-out will-change-[height] p-[10px]"
         style={{ 
           height: `${containerHeight}px`,
           border: '1px solid rgba(85, 85, 255, 0.30)'
