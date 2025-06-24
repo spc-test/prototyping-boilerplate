@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { CornerSmoothing } from 'corner-smoothing';
 
 interface Block {
   text: string;
@@ -153,14 +154,19 @@ export default function VioletBlock() {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <div
-        className="w-[450px] bg-white rounded-[16px] shadow-sm overflow-hidden flex flex-col transition-[height] duration-300 ease-out will-change-[height] p-[5px]"
+      <CornerSmoothing
+        cornerRadius={16}
+        className="w-[450px] bg-white shadow-sm overflow-hidden flex flex-col transition-[height] duration-300 ease-out will-change-[height] p-[5px]"
         style={{
           height: `${containerHeight}px`,
           border: '1px solid rgba(85, 85, 255, 0.30)'
         }}
       >
-        <div className="bg-[#F7F7FF] p-[10px] rounded-t-[12px] flex items-center justify-between">
+        <CornerSmoothing
+          cornerRadius={12}
+          className="bg-[#F7F7FF] p-[10px] flex items-center justify-between"
+          style={{ borderRadius: '12px 12px 0 0' }}
+        >
           <span className="text-[#5555FF] text-xs font-normal leading-[150%]" style={{ fontFamily: 'JetBrains Sans' }}>
             Exploring the codebase
           </span>
@@ -178,7 +184,7 @@ export default function VioletBlock() {
               </g>
             </svg>
           </div>
-        </div>
+        </CornerSmoothing>
         <div className="flex-1 relative overflow-hidden">
           <div
             className={`p-[10px] ${
@@ -208,7 +214,7 @@ export default function VioletBlock() {
             )}
           </div>
         </div>
-      </div>
+      </CornerSmoothing>
       <button
         onClick={resetAnimation}
         className="px-4 py-2 bg-[#8b5cf6] text-white text-sm font-medium rounded-lg hover:bg-[#7c3aed] transition-colors duration-200"
