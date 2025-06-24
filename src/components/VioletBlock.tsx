@@ -54,7 +54,8 @@ export default function VioletBlock() {
     const topPadding = 10;
     const bottomPadding = 10;
     const lineHeight = 24;
-    return headerHeight + topPadding + lineHeight + bottomPadding;
+    const containerPadding = 10; // 5px top + 5px bottom
+    return headerHeight + topPadding + lineHeight + bottomPadding + containerPadding;
   };
 
   const [containerHeight, setContainerHeight] = useState(getMinimumHeight());
@@ -64,7 +65,8 @@ export default function VioletBlock() {
     if (contentRef.current) {
       const headerHeight = 38;
       const contentHeight = contentRef.current.scrollHeight;
-      return headerHeight + contentHeight;
+      const containerPadding = 10; // 5px top + 5px bottom
+      return headerHeight + contentHeight + containerPadding;
     }
     return getMinimumHeight();
   };
