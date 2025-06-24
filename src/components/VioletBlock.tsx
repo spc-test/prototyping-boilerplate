@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { Squircle } from 'corner-smoothing';
 import './VioletBlock.css';
 
@@ -44,6 +44,10 @@ export default function VioletBlock() {
   const [showCursor, setShowCursor] = useState(true);
   const [showFooter, setShowFooter] = useState(false);
   const [isSliding, setIsSliding] = useState(false);
+  
+  // Ref to measure actual content height
+  const contentRef = useRef<HTMLDivElement>(null);
+  
   // Function to calculate minimum height (header + padding + one line of text)
   const getMinimumHeight = () => {
     const headerHeight = 38;
@@ -55,6 +59,16 @@ export default function VioletBlock() {
 
   const [containerHeight, setContainerHeight] = useState(getMinimumHeight());
 
+  // Function to measure actual content height
+  const measureContentHeight = () => {
+    if (contentRef.current) {
+      const headerHeight = 38;
+      const contentHeight = contentRef.current.scrollHeight;
+      return headerHeight + contentHeight;
+    }
+    return getMinimumHeight();
+  };
+
   const resetAnimation = () => {
     setCurrentBlockIndex(0);
     setDisplayedWords([]);
@@ -65,22 +79,6 @@ export default function VioletBlock() {
     setContainerHeight(getMinimumHeight());
   };
 
-  // Function to estimate text height based on content
-  const estimateTextHeight = (text: string, includeMatches: boolean = false) => {
-    const headerHeight = 38; // Updated header height
-    const topPadding = 10; // p-[10px] = 10px top padding
-    const bottomPadding = 10; // p-[10px] = 10px bottom padding
-    const lineHeight = 24; // More accurate line height for text-sm leading-relaxed
-    const containerWidth = 430; // Container width minus padding (450 - 20px for p-[10px])
-    const avgCharWidth = 6.5; // More accurate character width for text-sm
-    const charsPerLine = Math.floor(containerWidth / avgCharWidth);
-    const estimatedLines = Math.max(1, Math.ceil(text.length / charsPerLine));
-
-    const textHeight = estimatedLines * lineHeight;
-    const matchesHeight = includeMatches ? 28 : 0; // Height for "Found 0 matches" line with margin
-
-    return headerHeight + topPadding + textHeight + matchesHeight + bottomPadding;
-  };
 
   // Main typing animation effect
   useEffect(() => {
@@ -91,12 +89,6 @@ export default function VioletBlock() {
       const timer = setTimeout(() => {
         const newWords = currentBlock.words.slice(0, currentWordIndex + 1);
         setDisplayedWords(newWords);
-
-        // Calculate and update container height
-        const currentText = newWords.join(' ');
-        const newHeight = estimateTextHeight(currentText, false);
-        setContainerHeight(newHeight);
-
         setCurrentWordIndex(currentWordIndex + 1);
       }, 100); // Typing speed - 100ms per word
       return () => clearTimeout(timer);
@@ -105,14 +97,19 @@ export default function VioletBlock() {
       const delayTimer = setTimeout(() => {
         setShowCursor(false);
         setShowFooter(true);
-        // Update height to include footer text
-        const finalText = currentBlock.words.join(' ');
-        const newHeight = estimateTextHeight(finalText, true);
-        setContainerHeight(newHeight);
       }, 1000); // 1 second delay
       return () => clearTimeout(delayTimer);
     }
   }, [currentWordIndex, currentBlockIndex, blocks]);
+
+  // Measure and update container height after content changes
+  useLayoutEffect(() => {
+    const timer = setTimeout(() => {
+      const newHeight = measureContentHeight();
+      setContainerHeight(newHeight);
+    }, 0); // Measure after DOM update
+    return () => clearTimeout(timer);
+  }, [displayedWords, showFooter]);
 
   // Cursor blinking effect
   useEffect(() => {
@@ -190,6 +187,7 @@ export default function VioletBlock() {
         </div>
         <div className="flex-1 relative overflow-hidden">
           <div
+            ref={contentRef}
             className={`p-[10px] ${
               isSliding ? 'transition-all duration-500 ease-in-out transform -translate-y-full opacity-0' : ''
             }`}
