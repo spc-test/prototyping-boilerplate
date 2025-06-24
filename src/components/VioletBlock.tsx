@@ -229,7 +229,7 @@ export default function VioletBlock() {
   return (
     <div className="flex flex-col items-center gap-4">
       <div 
-        className="w-[450px] bg-white border border-[#e5d9ff] rounded-xl shadow-sm overflow-hidden flex flex-col transition-[height] duration-300 ease-out will-change-[height]"
+        className="w-[450px] bg-white border border-[#e5d9ff] rounded-2xl shadow-sm overflow-hidden flex flex-col transition-[height] duration-300 ease-out will-change-[height]"
         style={{ height: `${containerHeight}px` }}
       >
         <div className="bg-[#8b5cf6] px-5 py-3">
@@ -307,7 +307,7 @@ export default function VioletBlock() {
       </div>
       <button
         onClick={resetAnimation}
-        className="px-4 py-2 bg-[#8b5cf6] text-white text-sm font-medium rounded-lg hover:bg-[#7c3aed] transition-colors duration-200"
+        className="px-4 py-2 bg-[#8b5cf6] text-white text-sm font-medium rounded-2xl hover:bg-[#7c3aed] transition-colors duration-200"
       >
         Replay
       </button>
