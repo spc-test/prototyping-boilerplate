@@ -164,28 +164,30 @@ export default function VioletBlock() {
           backgroundColor: 'rgba(85, 85, 255, 0.30)'
         }}
       >
-        <Squircle
-          cornerRadius={12}
-          className="bg-[#F7F7FF] pt-[10px] px-[10px] pb-[22px] flex items-center justify-between"
-        >
-          <span className="text-[#5555FF] text-xs font-normal leading-[150%]" style={{ fontFamily: 'JetBrains Sans' }}>
-            Exploring the codebase
-          </span>
-          <div>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="12"
-              height="12"
-              viewBox="0 0 12 12"
-              fill="none"
-              className="flex-shrink-0"
-            >
-              <g opacity="0.4">
-                <path d="M4.07294 2.43818C3.91318 2.59794 3.91318 2.85696 4.07294 3.01672L7.0564 6.00018L4.07294 8.98363C3.91318 9.14339 3.91318 9.40242 4.07294 9.56217C4.2327 9.72193 4.49173 9.72193 4.65149 9.56217L7.92421 6.28945C8.08397 6.12969 8.08397 5.87067 7.92421 5.71091L4.65149 2.43818C4.49173 2.27842 4.2327 2.27842 4.07294 2.43818Z" fill="#5555FF"/>
-              </g>
-            </svg>
-          </div>
-        </Squircle>
+        <div className="h-[42px] overflow-hidden">
+          <Squircle
+            cornerRadius={12}
+            className="bg-[#F7F7FF] pt-[10px] px-[10px] pb-[22px] flex items-center justify-between"
+          >
+            <span className="text-[#5555FF] text-xs font-normal leading-[150%]" style={{ fontFamily: 'JetBrains Sans' }}>
+              Exploring the codebase
+            </span>
+            <div>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="12"
+                height="12"
+                viewBox="0 0 12 12"
+                fill="none"
+                className="flex-shrink-0"
+              >
+                <g opacity="0.4">
+                  <path d="M4.07294 2.43818C3.91318 2.59794 3.91318 2.85696 4.07294 3.01672L7.0564 6.00018L4.07294 8.98363C3.91318 9.14339 3.91318 9.40242 4.07294 9.56217C4.2327 9.72193 4.49173 9.72193 4.65149 9.56217L7.92421 6.28945C8.08397 6.12969 8.08397 5.87067 7.92421 5.71091L4.65149 2.43818C4.49173 2.27842 4.2327 2.27842 4.07294 2.43818Z" fill="#5555FF"/>
+                </g>
+              </svg>
+            </div>
+          </Squircle>
+        </div>
         <div className="flex-1 relative overflow-hidden">
           <div
             className={`p-[10px] ${
