@@ -190,11 +190,11 @@ export default function VioletBlock() {
         <div className="flex-1 relative overflow-hidden">
           <div
             ref={contentRef}
-            className={`p-[10px] ${
+            className={`p-[10px] min-h-[44px] ${
               isSliding ? 'transition-all duration-500 ease-in-out transform -translate-y-full opacity-0' : ''
             }`}
           >
-            <p className="text-[#374151] text-sm leading-relaxed">
+            <p className="text-[#374151] text-sm" style={{ lineHeight: '24px' }}>
               {displayedWords.join(' ')}
             </p>
             {showFooter && (
