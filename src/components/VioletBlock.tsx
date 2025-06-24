@@ -166,8 +166,7 @@ export default function VioletBlock() {
       >
         <Squircle
           cornerRadius={12}
-          className="bg-[#F7F7FF] p-[10px] flex items-center justify-between"
-          style={{ borderRadius: '12px 12px 0 0' }}
+          className="bg-[#F7F7FF] pt-[10px] px-[10px] pb-[22px] flex items-center justify-between"
         >
           <span className="text-[#5555FF] text-xs font-normal leading-[150%]" style={{ fontFamily: 'JetBrains Sans' }}>
             Exploring the codebase
