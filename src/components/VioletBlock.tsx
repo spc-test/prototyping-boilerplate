@@ -59,18 +59,19 @@ export default function VioletBlock() {
 
   // Function to estimate text height based on content
   const estimateTextHeight = (text: string, includeMatches: boolean = false) => {
-    const headerHeight = 44; // Purple header height
-    const topPadding = 16; // py-4 = 16px top padding
-    const bottomPadding = 16; // Base bottom padding
+    const headerHeight = 32; // Header with title and icon height
+    const topPadding = 24; // py-6 = 24px top padding
+    const bottomPadding = 24; // Base bottom padding
+    const headerMargin = 16; // mb-4 = 16px margin below header
     const lineHeight = 24; // More accurate line height for text-sm leading-relaxed
-    const containerWidth = 370; // Container width minus padding (450 - 80px for px-5)
+    const containerWidth = 338; // Container width minus padding (450 - 112px for px-6)
     const avgCharWidth = 6.5; // More accurate character width for text-sm
     const charsPerLine = Math.floor(containerWidth / avgCharWidth);
     const estimatedLines = Math.max(1, Math.ceil(text.length / charsPerLine));
     const textHeight = estimatedLines * lineHeight;
     const matchesHeight = includeMatches ? 28 : 0; // Height for "Found 0 matches" line with margin
     
-    return headerHeight + topPadding + textHeight + matchesHeight + bottomPadding;
+    return topPadding + headerHeight + headerMargin + textHeight + matchesHeight + bottomPadding;
   };
 
   useEffect(() => {
@@ -229,21 +230,24 @@ export default function VioletBlock() {
   return (
     <div className="flex flex-col items-center gap-4">
       <div 
-        className="w-[450px] bg-white border border-[#e5d9ff] rounded-2xl shadow-sm overflow-hidden flex flex-col transition-[height] duration-300 ease-out will-change-[height]"
+        className="w-[450px] bg-[#fafafa] border-2 border-[#e5d9ff] rounded-2xl shadow-sm overflow-hidden flex flex-col transition-[height] duration-300 ease-out will-change-[height]"
         style={{ height: `${containerHeight}px` }}
       >
-        <div className="bg-[#8b5cf6] p-[5px]">
-          <h3 className="text-white font-medium text-sm">
-            Exploring the codebase
-          </h3>
-        </div>
         <div className="flex-1 relative">
           {showFirstBlock && (
             <div
-              className={`px-5 py-4 transition-all duration-500 ease-in-out ${
+              className={`px-6 py-6 transition-all duration-500 ease-in-out ${
                 isSliding ? 'transform -translate-y-full opacity-0' : 'transform translate-y-0 opacity-100'
               }`}
             >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-[#8b5cf6] font-medium text-base">
+                  Exploring the codebase
+                </h3>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M6 12L10 8L6 4" stroke="#8b5cf6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
               <p className="text-[#374151] text-sm leading-relaxed">
                 {displayedWords.join(' ')}
               </p>
@@ -261,12 +265,20 @@ export default function VioletBlock() {
           )}
           {showSecondBlock && showSecondBlockContent && (
             <div
-              className={`px-5 py-4 transition-all duration-500 ease-in-out ${
+              className={`px-6 py-6 transition-all duration-500 ease-in-out ${
                 isSliding ? 'transform translate-y-0 opacity-100' : 'transform translate-y-full opacity-0'
               } ${
                 isSecondSliding ? 'transform -translate-y-full opacity-0' : ''
               }`}
             >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-[#8b5cf6] font-medium text-base">
+                  Exploring the codebase
+                </h3>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M6 12L10 8L6 4" stroke="#8b5cf6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
               <p className="text-[#374151] text-sm leading-relaxed">
                 {secondDisplayedWords.join(' ')}
               </p>
@@ -284,10 +296,18 @@ export default function VioletBlock() {
           )}
           {showThirdBlock && (
             <div
-              className={`px-5 py-4 transition-all duration-500 ease-in-out ${
+              className={`px-6 py-6 transition-all duration-500 ease-in-out ${
                 isSecondSliding ? 'transform translate-y-0 opacity-100' : 'transform translate-y-full opacity-0'
               }`}
             >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-[#8b5cf6] font-medium text-base">
+                  Exploring the codebase
+                </h3>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M6 12L10 8L6 4" stroke="#8b5cf6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
               <p className="text-[#374151] text-sm leading-relaxed">
                 {thirdDisplayedWords.join(' ')}
               </p>
