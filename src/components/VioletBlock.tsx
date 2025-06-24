@@ -142,7 +142,7 @@ export default function VioletBlock() {
   return (
     <div className="flex flex-col items-center gap-4">
       <div 
-        className="w-[450px] bg-white rounded-[16px] shadow-sm overflow-hidden flex flex-col transition-[height] duration-300 ease-out will-change-[height] p-[10px]"
+        className="w-[450px] bg-white rounded-[16px] shadow-sm overflow-hidden flex flex-col transition-[height] duration-300 ease-out will-change-[height] p-[5px]"
         style={{ 
           height: `${containerHeight}px`,
           border: '1px solid rgba(85, 85, 255, 0.30)'
@@ -170,7 +170,7 @@ export default function VioletBlock() {
         </div>
         <div className="flex-1 relative">
           <div
-            className={`px-5 py-4 transition-all duration-500 ease-in-out ${
+            className={`p-[10px] transition-all duration-500 ease-in-out ${
               isSliding ? 'transform -translate-y-full opacity-0' : 'transform translate-y-0 opacity-100'
             }`}
           >
