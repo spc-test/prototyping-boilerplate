@@ -42,7 +42,7 @@ export default function VioletBlock() {
   const [showCursor, setShowCursor] = useState(true);
   const [showFooter, setShowFooter] = useState(false);
   const [isSliding, setIsSliding] = useState(false);
-  const [containerHeight, setContainerHeight] = useState(60);
+  const [containerHeight, setContainerHeight] = useState(86);
 
   const resetAnimation = () => {
     setCurrentBlockIndex(0);
@@ -51,16 +51,16 @@ export default function VioletBlock() {
     setShowCursor(true);
     setShowFooter(false);
     setIsSliding(false);
-    setContainerHeight(60);
+    setContainerHeight(86);
   };
 
   // Function to estimate text height based on content
   const estimateTextHeight = (text: string, includeMatches: boolean = false) => {
     const headerHeight = 32; // New header height (5px padding top/bottom + text height)
-    const topPadding = 16; // py-4 = 16px top padding
-    const bottomPadding = 16; // Base bottom padding
+    const topPadding = 10; // p-[10px] = 10px top padding
+    const bottomPadding = 10; // p-[10px] = 10px bottom padding
     const lineHeight = 24; // More accurate line height for text-sm leading-relaxed
-    const containerWidth = 370; // Container width minus padding (450 - 80px for px-5)
+    const containerWidth = 430; // Container width minus padding (450 - 20px for p-[10px])
     const avgCharWidth = 6.5; // More accurate character width for text-sm
     const charsPerLine = Math.floor(containerWidth / avgCharWidth);
     const estimatedLines = Math.max(1, Math.ceil(text.length / charsPerLine));
@@ -123,7 +123,7 @@ export default function VioletBlock() {
         setIsSliding(true);
         // Start shrinking container gradually during the sliding animation
         setTimeout(() => {
-          setContainerHeight(60); // Shrink to minimum height during slide
+          setContainerHeight(86); // Shrink to minimum height during slide
         }, 150); // Start shrinking 150ms after slide begins
         // After sliding animation completes, move to next block
         setTimeout(() => {
