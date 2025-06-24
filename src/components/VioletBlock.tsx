@@ -121,6 +121,8 @@ export default function VioletBlock() {
     if (showFooter && currentBlockIndex < blocks.length - 1) {
       const timer = setTimeout(() => {
         setIsSliding(true);
+        // Immediately start shrinking container when sliding begins
+        setContainerHeight(60); // Shrink to minimum height during slide
         // After sliding animation completes, move to next block
         setTimeout(() => {
           setCurrentBlockIndex(prev => prev + 1);
@@ -172,7 +174,6 @@ export default function VioletBlock() {
           >
             <p className="text-[#374151] text-sm leading-relaxed">
               {displayedWords.join(' ')}
-              {showCursor && <span className="animate-pulse">|</span>}
             </p>
             {showFooter && (
               <div className="flex items-center gap-1 mt-2">
