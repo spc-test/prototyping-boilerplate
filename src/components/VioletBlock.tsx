@@ -64,7 +64,7 @@ export default function VioletBlock() {
   const measureContentHeight = () => {
     if (contentRef.current) {
       const headerHeight = 38;
-      const contentHeight = contentRef.current.scrollHeight;
+      const contentHeight = Math.max(contentRef.current.scrollHeight, 24);
       const containerPadding = 10; // 5px top + 5px bottom
       return headerHeight + contentHeight + containerPadding;
     }
