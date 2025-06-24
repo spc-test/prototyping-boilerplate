@@ -121,8 +121,10 @@ export default function VioletBlock() {
     if (showFooter && currentBlockIndex < blocks.length - 1) {
       const timer = setTimeout(() => {
         setIsSliding(true);
-        // Immediately start shrinking container when sliding begins
-        setContainerHeight(60); // Shrink to minimum height during slide
+        // Start shrinking container gradually during the sliding animation
+        setTimeout(() => {
+          setContainerHeight(60); // Shrink to minimum height during slide
+        }, 150); // Start shrinking 150ms after slide begins
         // After sliding animation completes, move to next block
         setTimeout(() => {
           setCurrentBlockIndex(prev => prev + 1);
