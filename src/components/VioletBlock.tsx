@@ -59,7 +59,7 @@ export default function VioletBlock() {
 
   // Function to estimate text height based on content
   const estimateTextHeight = (text: string, includeMatches: boolean = false) => {
-    const headerHeight = 44; // Purple header height
+    const headerHeight = 32; // New header height (5px padding top/bottom + text height)
     const topPadding = 16; // py-4 = 16px top padding
     const bottomPadding = 16; // Base bottom padding
     const lineHeight = 24; // More accurate line height for text-sm leading-relaxed
@@ -229,13 +229,31 @@ export default function VioletBlock() {
   return (
     <div className="flex flex-col items-center gap-4">
       <div 
-        className="w-[450px] bg-white border border-[#e5d9ff] rounded-xl shadow-sm overflow-hidden flex flex-col transition-[height] duration-300 ease-out will-change-[height]"
-        style={{ height: `${containerHeight}px` }}
+        className="w-[450px] bg-white rounded-[16px] shadow-sm overflow-hidden flex flex-col transition-[height] duration-300 ease-out will-change-[height]"
+        style={{ 
+          height: `${containerHeight}px`,
+          border: '1px solid rgba(85, 85, 255, 0.30)'
+        }}
       >
-        <div className="bg-[#8b5cf6] px-5 py-3">
-          <h3 className="text-white font-medium text-sm">
+        <div className="bg-[#F7F7FF] px-0 py-[5px] rounded-t-[12px] flex items-center justify-between">
+          <span className="text-[#5555FF] text-xs font-normal leading-[150%] pl-[10px]" style={{ fontFamily: 'JetBrains Sans' }}>
             Exploring the codebase
-          </h3>
+          </span>
+          <div className="pr-[10px]">
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              width="12" 
+              height="12" 
+              viewBox="0 0 12 12" 
+              fill="none"
+              style={{ transform: 'rotate(-90deg)' }}
+              className="flex-shrink-0"
+            >
+              <g opacity="0.4">
+                <path d="M4.07294 2.43818C3.91318 2.59794 3.91318 2.85696 4.07294 3.01672L7.0564 6.00018L4.07294 8.98363C3.91318 9.14339 3.91318 9.40242 4.07294 9.56217C4.2327 9.72193 4.49173 9.72193 4.65149 9.56217L7.92421 6.28945C8.08397 6.12969 8.08397 5.87067 7.92421 5.71091L4.65149 2.43818C4.49173 2.27842 4.2327 2.27842 4.07294 2.43818Z" fill="#5555FF"/>
+              </g>
+            </svg>
+          </div>
         </div>
         <div className="flex-1 relative">
           {showFirstBlock && (
