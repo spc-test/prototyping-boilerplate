@@ -46,7 +46,7 @@ export default function VioletBlock() {
   const [isSliding, setIsSliding] = useState(false);
   // Function to calculate minimum height (header + padding + one line of text)
   const getMinimumHeight = () => {
-    const headerHeight = 42;
+    const headerHeight = 38;
     const topPadding = 10;
     const bottomPadding = 10;
     const lineHeight = 24;
@@ -67,7 +67,7 @@ export default function VioletBlock() {
 
   // Function to estimate text height based on content
   const estimateTextHeight = (text: string, includeMatches: boolean = false) => {
-    const headerHeight = 42; // Updated header height (increased by 10px)
+    const headerHeight = 38; // Updated header height
     const topPadding = 10; // p-[10px] = 10px top padding
     const bottomPadding = 10; // p-[10px] = 10px bottom padding
     const lineHeight = 24; // More accurate line height for text-sm leading-relaxed
@@ -164,7 +164,7 @@ export default function VioletBlock() {
           backgroundColor: 'rgba(85, 85, 255, 0.30)'
         }}
       >
-        <div className="h-[42px] overflow-hidden">
+        <div className="h-[38px] overflow-hidden">
           <Squircle
             cornerRadius={12}
             className="bg-[#F7F7FF] pt-[10px] px-[10px] pb-[22px] flex items-center justify-between"
