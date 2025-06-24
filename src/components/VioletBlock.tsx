@@ -64,12 +64,12 @@ export default function VioletBlock() {
     const avgCharWidth = 6.5; // More accurate character width for text-sm
     const charsPerLine = Math.floor(containerWidth / avgCharWidth);
     const estimatedLines = Math.max(1, Math.ceil(text.length / charsPerLine));
-    
+
     // Add predictive buffer - expand container ahead of typing
     const bufferLines = predictive ? 0.5 : 0; // Add half a line buffer when being predictive
     const textHeight = (estimatedLines + bufferLines) * lineHeight;
     const matchesHeight = includeMatches ? 28 : 0; // Height for "Found 0 matches" line with margin
-    
+
     return headerHeight + topPadding + textHeight + matchesHeight + bottomPadding;
   };
 
@@ -82,12 +82,12 @@ export default function VioletBlock() {
       const timer = setTimeout(() => {
         const newWords = currentBlock.words.slice(0, currentWordIndex + 1);
         setDisplayedWords(newWords);
-        
+
         // Calculate and update container height predictively
         const currentText = newWords.join(' ');
         const newHeight = estimateTextHeight(currentText, false, true);
         setContainerHeight(newHeight);
-        
+
         setCurrentWordIndex(currentWordIndex + 1);
       }, 100); // Typing speed - 100ms per word
       return () => clearTimeout(timer);
@@ -146,25 +146,24 @@ export default function VioletBlock() {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <div 
+      <div
         className="w-[450px] bg-white rounded-[16px] shadow-sm overflow-hidden flex flex-col transition-[height] duration-300 ease-out will-change-[height] p-[5px]"
-        style={{ 
+        style={{
           height: `${containerHeight}px`,
           border: '1px solid rgba(85, 85, 255, 0.30)'
         }}
       >
-        <div className="bg-[#F7F7FF] px-0 py-[5px] rounded-t-[12px] flex items-center justify-between">
-          <span className="text-[#5555FF] text-xs font-normal leading-[150%] pl-[10px]" style={{ fontFamily: 'JetBrains Sans' }}>
+        <div className="bg-[#F7F7FF] p-[10px] rounded-t-[12px] flex items-center justify-between">
+          <span className="text-[#5555FF] text-xs font-normal leading-[150%]" style={{ fontFamily: 'JetBrains Sans' }}>
             Exploring the codebase
           </span>
-          <div className="pr-[10px]">
-            <svg 
-              xmlns="http://www.w3.org/2000/svg" 
-              width="12" 
-              height="12" 
-              viewBox="0 0 12 12" 
+          <div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="12"
+              height="12"
+              viewBox="0 0 12 12"
               fill="none"
-              style={{ transform: 'rotate(-90deg)' }}
               className="flex-shrink-0"
             >
               <g opacity="0.4">
