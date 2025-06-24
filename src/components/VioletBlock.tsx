@@ -42,7 +42,7 @@ export default function VioletBlock() {
   const [showCursor, setShowCursor] = useState(true);
   const [showFooter, setShowFooter] = useState(false);
   const [isSliding, setIsSliding] = useState(false);
-  const [containerHeight, setContainerHeight] = useState(86);
+  const [containerHeight, setContainerHeight] = useState(96);
 
   const resetAnimation = () => {
     setCurrentBlockIndex(0);
@@ -51,12 +51,12 @@ export default function VioletBlock() {
     setShowCursor(true);
     setShowFooter(false);
     setIsSliding(false);
-    setContainerHeight(86);
+    setContainerHeight(96);
   };
 
   // Function to estimate text height based on content
   const estimateTextHeight = (text: string, includeMatches: boolean = false, predictive: boolean = false) => {
-    const headerHeight = 32; // New header height (5px padding top/bottom + text height)
+    const headerHeight = 42; // Updated header height (increased by 10px)
     const topPadding = 10; // p-[10px] = 10px top padding
     const bottomPadding = 10; // p-[10px] = 10px bottom padding
     const lineHeight = 24; // More accurate line height for text-sm leading-relaxed
@@ -126,7 +126,7 @@ export default function VioletBlock() {
         setIsSliding(true);
         // Start shrinking container gradually during the sliding animation
         setTimeout(() => {
-          setContainerHeight(86); // Shrink to minimum height during slide
+          setContainerHeight(96); // Shrink to minimum height during slide
         }, 150); // Start shrinking 150ms after slide begins
         // After sliding animation completes, move to next block
         setTimeout(() => {
@@ -137,7 +137,7 @@ export default function VioletBlock() {
           setShowFooter(false);
           setIsSliding(false);
           // Reset container height immediately for new block without animation
-          setContainerHeight(86);
+          setContainerHeight(96);
         }, 500); // Match the CSS transition duration
       }, 3000); // Wait 3 seconds after footer appears
       return () => clearTimeout(timer);
