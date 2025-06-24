@@ -55,7 +55,7 @@ export default function VioletBlock() {
   };
 
   // Function to estimate text height based on content
-  const estimateTextHeight = (text: string, includeMatches: boolean = false) => {
+  const estimateTextHeight = (text: string, includeMatches: boolean = false, predictive: boolean = false) => {
     const headerHeight = 32; // New header height (5px padding top/bottom + text height)
     const topPadding = 10; // p-[10px] = 10px top padding
     const bottomPadding = 10; // p-[10px] = 10px bottom padding
@@ -64,7 +64,10 @@ export default function VioletBlock() {
     const avgCharWidth = 6.5; // More accurate character width for text-sm
     const charsPerLine = Math.floor(containerWidth / avgCharWidth);
     const estimatedLines = Math.max(1, Math.ceil(text.length / charsPerLine));
-    const textHeight = estimatedLines * lineHeight;
+    
+    // Add predictive buffer - expand container ahead of typing
+    const bufferLines = predictive ? 0.5 : 0; // Add half a line buffer when being predictive
+    const textHeight = (estimatedLines + bufferLines) * lineHeight;
     const matchesHeight = includeMatches ? 28 : 0; // Height for "Found 0 matches" line with margin
     
     return headerHeight + topPadding + textHeight + matchesHeight + bottomPadding;
@@ -80,9 +83,9 @@ export default function VioletBlock() {
         const newWords = currentBlock.words.slice(0, currentWordIndex + 1);
         setDisplayedWords(newWords);
         
-        // Calculate and update container height smoothly
+        // Calculate and update container height predictively
         const currentText = newWords.join(' ');
-        const newHeight = estimateTextHeight(currentText, false);
+        const newHeight = estimateTextHeight(currentText, false, true);
         setContainerHeight(newHeight);
         
         setCurrentWordIndex(currentWordIndex + 1);
@@ -133,6 +136,8 @@ export default function VioletBlock() {
           setShowCursor(true);
           setShowFooter(false);
           setIsSliding(false);
+          // Reset container height immediately for new block without animation
+          setContainerHeight(86);
         }, 500); // Match the CSS transition duration
       }, 3000); // Wait 3 seconds after footer appears
       return () => clearTimeout(timer);
@@ -170,8 +175,8 @@ export default function VioletBlock() {
         </div>
         <div className="flex-1 relative">
           <div
-            className={`p-[10px] transition-all duration-500 ease-in-out ${
-              isSliding ? 'transform -translate-y-full opacity-0' : 'transform translate-y-0 opacity-100'
+            className={`p-[10px] ${
+              isSliding ? 'transition-all duration-500 ease-in-out transform -translate-y-full opacity-0' : ''
             }`}
           >
             <p className="text-[#374151] text-sm leading-relaxed">
