@@ -45,6 +45,7 @@ export default function VioletBlock() {
   const [isSliding, setIsSliding] = useState(false);
   const [scrollOffset, setScrollOffset] = useState(0);
   const [heightTransitionComplete, setHeightTransitionComplete] = useState(true);
+  const [baselineContentHeight, setBaselineContentHeight] = useState(0);
   
   // Ref to measure actual content height
   const contentRef = useRef<HTMLDivElement>(null);
@@ -89,11 +90,21 @@ export default function VioletBlock() {
   // Function to calculate scroll offset when content overflows
   const calculateScrollOffset = () => {
     if (contentRef.current && textContainerRef.current) {
-      const textHeight = contentRef.current.scrollHeight;
+      const currentTextHeight = contentRef.current.scrollHeight;
       const containerHeight = textContainerRef.current.clientHeight;
-      // Only scroll if content actually exceeds the container height
-      if (textHeight > containerHeight) {
-        return textHeight - containerHeight;
+      
+      // If we haven't set a baseline yet (first time at max height), set it now
+      if (baselineContentHeight === 0) {
+        setBaselineContentHeight(currentTextHeight);
+        return 0; // No scroll needed yet
+      }
+      
+      // Calculate how much content has been added since we reached max height
+      const additionalContent = currentTextHeight - baselineContentHeight;
+      
+      // Only scroll if we have additional content beyond what fits in the container
+      if (additionalContent > 0) {
+        return Math.max(0, additionalContent);
       }
     }
     return 0;
@@ -109,6 +120,7 @@ export default function VioletBlock() {
     setScrollOffset(0);
     setContainerHeight(getMinimumHeight());
     setHeightTransitionComplete(true);
+    setBaselineContentHeight(0);
   };
 
 
@@ -152,8 +164,8 @@ export default function VioletBlock() {
         setScrollOffset(0);
       } else if (heightTransitionComplete && newHeight >= getMaximumHeight()) {
         // Calculate scroll offset for each word change, but only after height transition is complete
-        const scrollAmount = calculateScrollOffset();
-        setScrollOffset(scrollAmount);
+        const currentScrollAmount = calculateScrollOffset();
+        setScrollOffset(currentScrollAmount);
       }
     }, 0); // Measure after DOM update
     return () => clearTimeout(timer);
@@ -212,6 +224,8 @@ export default function VioletBlock() {
           // Reset container height immediately for new block without animation
           setContainerHeight(getMinimumHeight());
           setHeightTransitionComplete(true);
+          setScrollOffset(0);
+          setBaselineContentHeight(0);
         }, 500); // Match the CSS transition duration
       }, 3000); // Wait 3 seconds after footer appears
       return () => clearTimeout(timer);
