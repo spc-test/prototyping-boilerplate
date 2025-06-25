@@ -89,8 +89,10 @@ export default function VioletBlock() {
     if (contentRef.current && textContainerRef.current) {
       const textHeight = contentRef.current.scrollHeight;
       const containerHeight = textContainerRef.current.clientHeight;
-      // Only scroll if content actually exceeds the container height
-      if (textHeight > containerHeight) {
+      // Add a small buffer to prevent premature scrolling and jumping
+      const buffer = 4; // 4px buffer to prevent early scrolling
+      // Only scroll if content actually exceeds the container height plus buffer
+      if (textHeight > containerHeight + buffer) {
         return textHeight - containerHeight;
       }
     }
@@ -138,13 +140,14 @@ export default function VioletBlock() {
       setContainerHeight(newHeight);
       
       // Only calculate scroll offset when container has reached maximum height
+      // and content actually overflows
       if (newHeight >= getMaximumHeight()) {
         const scrollAmount = calculateScrollOffset();
         setScrollOffset(scrollAmount);
       } else {
         setScrollOffset(0);
       }
-    }, 0); // Measure after DOM update
+    }, 10); // Small delay to ensure DOM is fully updated
     return () => clearTimeout(timer);
   }, [displayedWords, showFooter]);
 
