@@ -19,7 +19,7 @@ export default function VioletBlock() {
       footerText: 'Found 0 matches'
     },
     {
-      text: "Perfect! I've successfully added the \"View Demo\" button with a book icon above the user avatar in the navigation. The button is now positioned correctly and styled to match the existing design system. I've also ensured that the button follows the proper accessibility guidelines with appropriate ARIA labels and keyboard navigation support. The implementation includes proper hover states, focus indicators, and responsive behavior across different screen sizes. Additionally, I've integrated the button with the existing theme system so it automatically adapts to light and dark modes. The icon is properly sized and aligned, and the button maintains consistent spacing with other navigation elements.",
+      text: "Perfect! I've successfully added the \"View Demo\" button with a book icon above the user avatar in the navigation. The button is now positioned correctly and styled to match the existing design system. I've also ensured that the button follows the proper accessibility guidelines with appropriate ARIA labels and keyboard navigation support. The implementation includes proper hover states, focus indicators, and responsive behavior across different screen sizes.",
       words: [],
       footerIcon: 'search',
       footerText: 'Found 0 matches'
