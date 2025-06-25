@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
-import { Squircle } from 'corner-smoothing';
 import './VioletBlock.css';
 
 interface Block {
@@ -154,20 +153,16 @@ export default function VioletBlock() {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <Squircle
-        cornerRadius={16}
-        borderWidth={1}
-        className="w-[450px] shadow-sm overflow-hidden flex flex-col transition-[height] duration-300 ease-out will-change-[height] p-[5px] squircle-border"
+      <div
+        className="w-[450px] shadow-sm overflow-hidden flex flex-col transition-[height] duration-300 ease-out will-change-[height] p-[5px] rounded-2xl border"
         style={{
           height: `${containerHeight}px`,
-          backgroundColor: 'rgba(85, 85, 255, 0.30)'
+          backgroundColor: 'rgba(85, 85, 255, 0.30)',
+          borderColor: 'rgba(85, 85, 255, 0.2)'
         }}
       >
         <div className="h-[38px] overflow-hidden">
-          <Squircle
-            cornerRadius={12}
-            className="bg-[#F7F7FF] pt-[10px] px-[10px] pb-[22px] flex items-center justify-between"
-          >
+          <div className="bg-[#F7F7FF] pt-[10px] px-[10px] pb-[22px] flex items-center justify-between rounded-xl">
             <span className="text-[#5555FF] text-xs font-normal leading-[150%]" style={{ fontFamily: 'JetBrains Sans' }}>
               Exploring the codebase
             </span>
@@ -185,7 +180,7 @@ export default function VioletBlock() {
                 </g>
               </svg>
             </div>
-          </Squircle>
+          </div>
         </div>
         <div className="flex-1 relative overflow-hidden">
           <div
@@ -217,7 +212,7 @@ export default function VioletBlock() {
             )}
           </div>
         </div>
-      </Squircle>
+      </div>
       <button
         onClick={resetAnimation}
         className="px-4 py-2 bg-[#8b5cf6] text-white text-sm font-medium rounded-lg hover:bg-[#7c3aed] transition-colors duration-200"
