@@ -209,10 +209,8 @@ export default function VioletBlock() {
     if (showFooter && currentBlockIndex < blocks.length - 1) {
       const timer = setTimeout(() => {
         setIsSliding(true);
-        // Start shrinking container gradually during the sliding animation
-        setTimeout(() => {
-          setContainerHeight(getMinimumHeight()); // Shrink to minimum height during slide
-        }, 150); // Start shrinking 150ms after slide begins
+        // Start shrinking container immediately when sliding begins
+        setContainerHeight(getMinimumHeight());
         // After sliding animation completes, move to next block
         setTimeout(() => {
           setCurrentBlockIndex(prev => prev + 1);
@@ -266,8 +264,8 @@ export default function VioletBlock() {
         <div ref={textContainerRef} className="flex-1 relative overflow-hidden">
           <div
             ref={contentRef}
-            className={`p-[10px] min-h-[44px] transition-transform duration-300 ease-out ${
-              isSliding ? 'transition-all duration-500 ease-in-out transform -translate-y-full opacity-0' : ''
+            className={`p-[10px] min-h-[44px] ${
+              isSliding ? 'transition-all duration-500 ease-in-out transform -translate-y-full opacity-0' : 'transition-transform duration-300 ease-out'
             }`}
             style={{
               transform: `translateY(-${scrollOffset}px)`
