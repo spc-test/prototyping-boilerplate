@@ -11,6 +11,27 @@ interface Block {
 }
 
 export default function VioletBlock() {
+  // Function to calculate minimum height (header + padding + one line of text)
+  const getMinimumHeight = () => {
+    const headerHeight = 38;
+    const topPadding = 10;
+    const bottomPadding = 10;
+    const lineHeight = 24;
+    const containerPadding = 10; // 5px top + 5px bottom
+    return headerHeight + topPadding + lineHeight + bottomPadding + containerPadding;
+  };
+
+  // Function to calculate maximum height (header + padding + 4 lines of text)
+  const getMaximumHeight = () => {
+    const headerHeight = 38;
+    const topPadding = 10;
+    const bottomPadding = 10;
+    const lineHeight = 24;
+    const maxLines = 4;
+    const containerPadding = 10; // 5px top + 5px bottom
+    return headerHeight + topPadding + (lineHeight * maxLines) + bottomPadding + containerPadding;
+  };
+
   const blocks: Block[] = [
     {
       text: "I'll help you add a \"View Demo\" button with a book icon above the user avatar. Let me first explore the current navigation structure to understand where the user avatar is located and how to implement this feature.",
@@ -50,27 +71,6 @@ export default function VioletBlock() {
   const contentRef = useRef<HTMLDivElement>(null);
   const textContainerRef = useRef<HTMLDivElement>(null);
   const previousHeightRef = useRef<number>(getMinimumHeight());
-  
-  // Function to calculate minimum height (header + padding + one line of text)
-  const getMinimumHeight = () => {
-    const headerHeight = 38;
-    const topPadding = 10;
-    const bottomPadding = 10;
-    const lineHeight = 24;
-    const containerPadding = 10; // 5px top + 5px bottom
-    return headerHeight + topPadding + lineHeight + bottomPadding + containerPadding;
-  };
-
-  // Function to calculate maximum height (header + padding + 4 lines of text)
-  const getMaximumHeight = () => {
-    const headerHeight = 38;
-    const topPadding = 10;
-    const bottomPadding = 10;
-    const lineHeight = 24;
-    const maxLines = 4;
-    const containerPadding = 10; // 5px top + 5px bottom
-    return headerHeight + topPadding + (lineHeight * maxLines) + bottomPadding + containerPadding;
-  };
 
   const [containerHeight, setContainerHeight] = useState(getMinimumHeight());
 
