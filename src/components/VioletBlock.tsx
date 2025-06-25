@@ -157,7 +157,6 @@ export default function VioletBlock() {
         className="w-[450px] shadow-sm overflow-hidden flex flex-col transition-[height] duration-300 ease-out will-change-[height] p-[5px] rounded-2xl border"
         style={{
           height: `${containerHeight}px`,
-          backgroundColor: 'rgba(85, 85, 255, 0.30)',
           borderColor: 'rgba(85, 85, 255, 0.2)'
         }}
       >
