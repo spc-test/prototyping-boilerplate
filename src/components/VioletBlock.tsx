@@ -249,13 +249,15 @@ export default function VioletBlock() {
               </div>
             )}
           </div>
-          {/* White gradient overlay to fade text under header */}
-          <div 
-            className="absolute top-0 left-0 right-0 h-8 pointer-events-none z-10"
-            style={{
-              background: 'linear-gradient(to bottom, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 100%)'
-            }}
-          />
+          {/* White gradient overlay to fade text under header - only show when scrolling */}
+          {scrollOffset > 0 && (
+            <div 
+              className="absolute top-0 left-0 right-0 h-8 pointer-events-none z-10"
+              style={{
+                background: 'linear-gradient(to bottom, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 100%)'
+              }}
+            />
+          )}
         </div>
       </div>
       <button
