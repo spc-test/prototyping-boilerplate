@@ -44,10 +44,12 @@ export default function VioletBlock() {
   const [showFooter, setShowFooter] = useState(false);
   const [isSliding, setIsSliding] = useState(false);
   const [scrollOffset, setScrollOffset] = useState(0);
+  const [heightTransitionComplete, setHeightTransitionComplete] = useState(true);
   
   // Ref to measure actual content height
   const contentRef = useRef<HTMLDivElement>(null);
   const textContainerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   
   // Function to calculate minimum height (header + padding + one line of text)
   const getMinimumHeight = () => {
@@ -106,6 +108,7 @@ export default function VioletBlock() {
     setIsSliding(false);
     setScrollOffset(0);
     setContainerHeight(getMinimumHeight());
+    setHeightTransitionComplete(true);
   };
 
 
@@ -135,18 +138,25 @@ export default function VioletBlock() {
   useLayoutEffect(() => {
     const timer = setTimeout(() => {
       const newHeight = measureContentHeight();
+      const currentHeight = containerHeight;
+      
+      // Check if we're transitioning to maximum height
+      if (newHeight >= getMaximumHeight() && currentHeight < getMaximumHeight()) {
+        setHeightTransitionComplete(false);
+      }
+      
       setContainerHeight(newHeight);
       
-      // Only calculate scroll offset when container has reached maximum height
-      if (newHeight >= getMaximumHeight()) {
+      // Only calculate scroll offset when container has reached maximum height AND transition is complete
+      if (newHeight >= getMaximumHeight() && heightTransitionComplete) {
         const scrollAmount = calculateScrollOffset();
         setScrollOffset(scrollAmount);
-      } else {
+      } else if (newHeight < getMaximumHeight()) {
         setScrollOffset(0);
       }
     }, 0); // Measure after DOM update
     return () => clearTimeout(timer);
-  }, [displayedWords, showFooter]);
+  }, [displayedWords, showFooter, containerHeight, heightTransitionComplete]);
 
   // Cursor blinking effect
   useEffect(() => {
@@ -161,6 +171,29 @@ export default function VioletBlock() {
       return () => clearInterval(cursorTimer);
     }
   }, [currentWordIndex, currentBlockIndex, blocks]);
+
+  // Listen for height transition end
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleTransitionEnd = (event: TransitionEvent) => {
+      if (event.propertyName === 'height') {
+        setHeightTransitionComplete(true);
+      }
+    };
+
+    container.addEventListener('transitionend', handleTransitionEnd);
+    return () => container.removeEventListener('transitionend', handleTransitionEnd);
+  }, []);
+
+  // Apply scroll offset after height transition completes
+  useEffect(() => {
+    if (heightTransitionComplete && containerHeight >= getMaximumHeight()) {
+      const scrollAmount = calculateScrollOffset();
+      setScrollOffset(scrollAmount);
+    }
+  }, [heightTransitionComplete, containerHeight]);
 
   // Block transition effect
   useEffect(() => {
@@ -181,6 +214,7 @@ export default function VioletBlock() {
           setIsSliding(false);
           // Reset container height immediately for new block without animation
           setContainerHeight(getMinimumHeight());
+          setHeightTransitionComplete(true);
         }, 500); // Match the CSS transition duration
       }, 3000); // Wait 3 seconds after footer appears
       return () => clearTimeout(timer);
@@ -190,6 +224,7 @@ export default function VioletBlock() {
   return (
     <div className="flex flex-col items-center gap-4">
       <div
+        ref={containerRef}
         className="w-[450px] shadow-sm overflow-hidden flex flex-col transition-[height] duration-300 ease-out will-change-[height] p-[5px] rounded-2xl border"
         style={{
           height: `${containerHeight}px`,
