@@ -134,7 +134,7 @@ export default function VioletBlock() {
     }
   }, [currentWordIndex, currentBlockIndex, blocks]);
 
-  // Measure and update container height and scroll offset after content changes
+  // Measure and update container height after content changes
   useLayoutEffect(() => {
     const timer = setTimeout(() => {
       const newHeight = measureContentHeight();
@@ -147,16 +147,25 @@ export default function VioletBlock() {
       
       setContainerHeight(newHeight);
       
-      // Only calculate scroll offset when container has reached maximum height AND transition is complete
-      if (newHeight >= getMaximumHeight() && heightTransitionComplete) {
-        const scrollAmount = calculateScrollOffset();
-        setScrollOffset(scrollAmount);
-      } else if (newHeight < getMaximumHeight()) {
+      // Reset scroll offset when container is not at maximum height
+      if (newHeight < getMaximumHeight()) {
         setScrollOffset(0);
       }
     }, 0); // Measure after DOM update
     return () => clearTimeout(timer);
-  }, [displayedWords, showFooter, containerHeight, heightTransitionComplete]);
+  }, [displayedWords, showFooter, containerHeight]);
+
+  // Apply scroll offset after height transition completes
+  useEffect(() => {
+    if (heightTransitionComplete && containerHeight >= getMaximumHeight()) {
+      // Add a small delay to ensure DOM has fully settled
+      const timer = setTimeout(() => {
+        const scrollAmount = calculateScrollOffset();
+        setScrollOffset(scrollAmount);
+      }, 50); // Small delay to ensure accurate measurements
+      return () => clearTimeout(timer);
+    }
+  }, [heightTransitionComplete, containerHeight]);
 
   // Cursor blinking effect
   useEffect(() => {
@@ -187,13 +196,6 @@ export default function VioletBlock() {
     return () => container.removeEventListener('transitionend', handleTransitionEnd);
   }, []);
 
-  // Apply scroll offset after height transition completes
-  useEffect(() => {
-    if (heightTransitionComplete && containerHeight >= getMaximumHeight()) {
-      const scrollAmount = calculateScrollOffset();
-      setScrollOffset(scrollAmount);
-    }
-  }, [heightTransitionComplete, containerHeight]);
 
   // Block transition effect
   useEffect(() => {
