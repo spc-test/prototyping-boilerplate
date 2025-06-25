@@ -150,22 +150,14 @@ export default function VioletBlock() {
       // Reset scroll offset when container is not at maximum height
       if (newHeight < getMaximumHeight()) {
         setScrollOffset(0);
+      } else if (heightTransitionComplete && newHeight >= getMaximumHeight()) {
+        // Calculate scroll offset for each word change, but only after height transition is complete
+        const scrollAmount = calculateScrollOffset();
+        setScrollOffset(scrollAmount);
       }
     }, 0); // Measure after DOM update
     return () => clearTimeout(timer);
-  }, [displayedWords, showFooter, containerHeight]);
-
-  // Apply scroll offset after height transition completes
-  useEffect(() => {
-    if (heightTransitionComplete && containerHeight >= getMaximumHeight()) {
-      // Add a small delay to ensure DOM has fully settled
-      const timer = setTimeout(() => {
-        const scrollAmount = calculateScrollOffset();
-        setScrollOffset(scrollAmount);
-      }, 50); // Small delay to ensure accurate measurements
-      return () => clearTimeout(timer);
-    }
-  }, [heightTransitionComplete, containerHeight]);
+  }, [displayedWords, showFooter, containerHeight, heightTransitionComplete]);
 
   // Cursor blinking effect
   useEffect(() => {
