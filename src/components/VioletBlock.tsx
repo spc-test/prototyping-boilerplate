@@ -209,12 +209,14 @@ export default function VioletBlock() {
   }, [showFooter, currentBlockIndex, blocks.length]);
 
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div className="flex flex-col items-center gap-4" style={{ contain: 'layout style' }}>
       <div
         className="w-[450px] shadow-sm overflow-hidden flex flex-col transition-[height] duration-300 ease-out will-change-[height] p-[5px] rounded-2xl border"
         style={{
           height: `${containerHeight}px`,
-          borderColor: 'rgba(85, 85, 255, 0.2)'
+          borderColor: 'rgba(85, 85, 255, 0.2)',
+          contain: 'layout style size',
+          overflowAnchor: 'none'
         }}
       >
         <div className="h-[38px] overflow-hidden">
