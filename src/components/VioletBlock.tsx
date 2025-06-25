@@ -19,7 +19,7 @@ export default function VioletBlock() {
       footerText: 'Found 0 matches'
     },
     {
-      text: "Perfect! I've successfully added the \"View Demo\" button with a book icon above the user avatar in the navigation. The button is now positioned correctly and styled to match the existing design system.",
+      text: "Perfect! I've successfully added the \"View Demo\" button with a book icon above the user avatar in the navigation. The button is now positioned correctly and styled to match the existing design system. I've also ensured that the button follows the proper accessibility guidelines with appropriate ARIA labels and keyboard navigation support. The implementation includes proper hover states, focus indicators, and responsive behavior across different screen sizes. Additionally, I've integrated the button with the existing theme system so it automatically adapts to light and dark modes. The icon is properly sized and aligned, and the button maintains consistent spacing with other navigation elements.",
       words: [],
       footerIcon: 'search',
       footerText: 'Found 0 matches'
@@ -43,9 +43,11 @@ export default function VioletBlock() {
   const [showCursor, setShowCursor] = useState(true);
   const [showFooter, setShowFooter] = useState(false);
   const [isSliding, setIsSliding] = useState(false);
+  const [scrollOffset, setScrollOffset] = useState(0);
   
   // Ref to measure actual content height
   const contentRef = useRef<HTMLDivElement>(null);
+  const textContainerRef = useRef<HTMLDivElement>(null);
   
   // Function to calculate minimum height (header + padding + one line of text)
   const getMinimumHeight = () => {
@@ -57,6 +59,17 @@ export default function VioletBlock() {
     return headerHeight + topPadding + lineHeight + bottomPadding + containerPadding;
   };
 
+  // Function to calculate maximum height (header + padding + 4 lines of text)
+  const getMaximumHeight = () => {
+    const headerHeight = 38;
+    const topPadding = 10;
+    const bottomPadding = 10;
+    const lineHeight = 24;
+    const maxLines = 4;
+    const containerPadding = 10; // 5px top + 5px bottom
+    return headerHeight + topPadding + (lineHeight * maxLines) + bottomPadding + containerPadding;
+  };
+
   const [containerHeight, setContainerHeight] = useState(getMinimumHeight());
 
   // Function to measure actual content height
@@ -65,9 +78,21 @@ export default function VioletBlock() {
       const headerHeight = 38;
       const contentHeight = Math.max(contentRef.current.scrollHeight, 24);
       const containerPadding = 10; // 5px top + 5px bottom
-      return headerHeight + contentHeight + containerPadding;
+      const calculatedHeight = headerHeight + contentHeight + containerPadding;
+      return Math.min(calculatedHeight, getMaximumHeight());
     }
     return getMinimumHeight();
+  };
+
+  // Function to calculate scroll offset when content overflows
+  const calculateScrollOffset = () => {
+    if (contentRef.current && textContainerRef.current) {
+      const textHeight = contentRef.current.scrollHeight;
+      const containerHeight = textContainerRef.current.clientHeight;
+      const maxScroll = Math.max(0, textHeight - containerHeight);
+      return maxScroll;
+    }
+    return 0;
   };
 
   const resetAnimation = () => {
@@ -77,6 +102,7 @@ export default function VioletBlock() {
     setShowCursor(true);
     setShowFooter(false);
     setIsSliding(false);
+    setScrollOffset(0);
     setContainerHeight(getMinimumHeight());
   };
 
@@ -103,11 +129,17 @@ export default function VioletBlock() {
     }
   }, [currentWordIndex, currentBlockIndex, blocks]);
 
-  // Measure and update container height after content changes
+  // Measure and update container height and scroll offset after content changes
   useLayoutEffect(() => {
     const timer = setTimeout(() => {
       const newHeight = measureContentHeight();
       setContainerHeight(newHeight);
+      
+      // Calculate scroll offset for overflow content
+      const scrollAmount = calculateScrollOffset();
+      if (scrollAmount > 0) {
+        setScrollOffset(scrollAmount);
+      }
     }, 0); // Measure after DOM update
     return () => clearTimeout(timer);
   }, [displayedWords, showFooter]);
@@ -181,12 +213,15 @@ export default function VioletBlock() {
             </div>
           </div>
         </div>
-        <div className="flex-1 relative overflow-hidden">
+        <div ref={textContainerRef} className="flex-1 relative overflow-hidden">
           <div
             ref={contentRef}
-            className={`p-[10px] min-h-[44px] ${
+            className={`p-[10px] min-h-[44px] transition-transform duration-300 ease-out ${
               isSliding ? 'transition-all duration-500 ease-in-out transform -translate-y-full opacity-0' : ''
             }`}
+            style={{
+              transform: `translateY(-${scrollOffset}px)`
+            }}
           >
             <p className="text-[#374151] text-sm" style={{ lineHeight: '24px' }}>
               {displayedWords.join(' ')}
