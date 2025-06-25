@@ -173,14 +173,17 @@ export default function VioletBlock() {
     }
   }, [currentWordIndex, currentBlockIndex, blocks]);
 
-  // Listen for height transition end
+  // Listen for height transition end and add delay before enabling scroll calculations
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
     const handleTransitionEnd = (event: TransitionEvent) => {
       if (event.propertyName === 'height') {
-        setHeightTransitionComplete(true);
+        // Add 300ms delay after height transition completes
+        setTimeout(() => {
+          setHeightTransitionComplete(true);
+        }, 300);
       }
     };
 
