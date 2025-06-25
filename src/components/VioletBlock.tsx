@@ -44,10 +44,12 @@ export default function VioletBlock() {
   const [showFooter, setShowFooter] = useState(false);
   const [isSliding, setIsSliding] = useState(false);
   const [scrollOffset, setScrollOffset] = useState(0);
+  const [isHeightStable, setIsHeightStable] = useState(false);
   
   // Ref to measure actual content height
   const contentRef = useRef<HTMLDivElement>(null);
   const textContainerRef = useRef<HTMLDivElement>(null);
+  const previousHeightRef = useRef<number>(getMinimumHeight());
   
   // Function to calculate minimum height (header + padding + one line of text)
   const getMinimumHeight = () => {
@@ -107,7 +109,9 @@ export default function VioletBlock() {
     setShowFooter(false);
     setIsSliding(false);
     setScrollOffset(0);
+    setIsHeightStable(false);
     setContainerHeight(getMinimumHeight());
+    previousHeightRef.current = getMinimumHeight();
   };
 
 
@@ -137,11 +141,23 @@ export default function VioletBlock() {
   useLayoutEffect(() => {
     const timer = setTimeout(() => {
       const newHeight = measureContentHeight();
-      setContainerHeight(newHeight);
+      const heightChanged = Math.abs(newHeight - previousHeightRef.current) > 1;
       
-      // Only calculate scroll offset when container has reached maximum height
-      // and content actually overflows
-      if (newHeight >= getMaximumHeight()) {
+      setContainerHeight(newHeight);
+      previousHeightRef.current = newHeight;
+      
+      // Mark height as stable if it hasn't changed significantly
+      if (!heightChanged) {
+        setIsHeightStable(true);
+      } else {
+        setIsHeightStable(false);
+      }
+      
+      // Only calculate scroll offset when:
+      // 1. Container has reached maximum height
+      // 2. Height is stable (not changing)
+      // 3. Content actually overflows
+      if (newHeight >= getMaximumHeight() && isHeightStable) {
         const scrollAmount = calculateScrollOffset();
         setScrollOffset(scrollAmount);
       } else {
@@ -149,7 +165,7 @@ export default function VioletBlock() {
       }
     }, 10); // Small delay to ensure DOM is fully updated
     return () => clearTimeout(timer);
-  }, [displayedWords, showFooter]);
+  }, [displayedWords, showFooter, isHeightStable]);
 
   // Cursor blinking effect
   useEffect(() => {
@@ -182,8 +198,10 @@ export default function VioletBlock() {
           setShowCursor(true);
           setShowFooter(false);
           setIsSliding(false);
+          setIsHeightStable(false);
           // Reset container height immediately for new block without animation
           setContainerHeight(getMinimumHeight());
+          previousHeightRef.current = getMinimumHeight();
         }, 500); // Match the CSS transition duration
       }, 3000); // Wait 3 seconds after footer appears
       return () => clearTimeout(timer);
