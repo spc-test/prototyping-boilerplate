@@ -31,6 +31,9 @@ interface ContentProps {
   scrollOffset: number;
   isSliding: boolean;
   contentRef: RefObject<HTMLDivElement>;
+  showFooter: boolean;
+  footerIcon?: 'search' | 'terminal';
+  footerText?: string;
 }
 
 interface FooterProps {
@@ -315,7 +318,10 @@ const AnimationContent: React.FC<ContentProps> = ({
   showCursor, 
   scrollOffset, 
   isSliding, 
-  contentRef 
+  contentRef,
+  showFooter,
+  footerIcon,
+  footerText
 }) => (
   <div
     ref={contentRef}
@@ -328,7 +334,11 @@ const AnimationContent: React.FC<ContentProps> = ({
   >
     <p className="text-[#374151] text-sm" style={{ lineHeight: '24px' }}>
       {content}
+      {showCursor && <span className="animate-pulse">|</span>}
     </p>
+    {showFooter && footerIcon && footerText && (
+      <AnimationFooter icon={footerIcon} text={footerText} />
+    )}
   </div>
 );
 
@@ -412,25 +422,16 @@ export default function VioletBlock() {
         <AnimationHeader title="Exploring the codebase" isSliding={animationState.isSliding} />
         
         <div ref={textContainerRef} className="flex-1 relative overflow-hidden">
-          <div
-            ref={contentRef}
-            className={`p-[10px] min-h-[44px] ${
-              animationState.isSliding ? 'transition-all duration-500 ease-in-out transform -translate-y-full opacity-0' : 'transition-transform duration-300 ease-out'
-            }`}
-            style={{
-              transform: `translateY(-${heightState.scrollOffset}px)`
-            }}
-          >
-            <p className="text-[#374151] text-sm" style={{ lineHeight: '24px' }}>
-              {animationState.displayedWords.join(' ')}
-            </p>
-          </div>
-          
-          {animationState.showFooter && currentBlock && (
-            <div className="absolute bottom-[10px] left-[10px] right-[10px]">
-              <AnimationFooter icon={currentBlock.footerIcon} text={currentBlock.footerText} />
-            </div>
-          )}
+          <AnimationContent
+            content={animationState.displayedWords.join(' ')}
+            showCursor={animationState.showCursor}
+            scrollOffset={heightState.scrollOffset}
+            isSliding={animationState.isSliding}
+            contentRef={contentRef}
+            showFooter={animationState.showFooter}
+            footerIcon={currentBlock?.footerIcon}
+            footerText={currentBlock?.footerText}
+          />
           
           {/* White gradient overlay to fade text under header - only show when scrolling */}
           {heightState.scrollOffset > 0 && (
