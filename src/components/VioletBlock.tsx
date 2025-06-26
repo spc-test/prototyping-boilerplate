@@ -204,6 +204,7 @@ const useHeightTransition = (
   const calculateScrollOffset = () => {
     if (contentRef.current && textContainerRef.current) {
       const currentTextHeight = contentRef.current.scrollHeight;
+      const containerHeight = textContainerRef.current.clientHeight;
       
       // If we haven't set a baseline yet (first time at max height), set it now
       if (baselineContentHeight === 0) {
@@ -327,7 +328,6 @@ const AnimationContent: React.FC<ContentProps> = ({
   >
     <p className="text-[#374151] text-sm" style={{ lineHeight: '24px' }}>
       {content}
-      {showCursor && <span className="animate-pulse">|</span>}
     </p>
   </div>
 );
@@ -412,19 +412,22 @@ export default function VioletBlock() {
         <AnimationHeader title="Exploring the codebase" isSliding={animationState.isSliding} />
         
         <div ref={textContainerRef} className="flex-1 relative overflow-hidden">
-          <AnimationContent
-            content={animationState.displayedWords.join(' ')}
-            showCursor={animationState.showCursor}
-            scrollOffset={heightState.scrollOffset}
-            isSliding={animationState.isSliding}
-            contentRef={contentRef}
-          />
-          
-          {animationState.showFooter && currentBlock && (
-            <div className="absolute bottom-[10px] left-[10px] right-[10px]">
+          <div
+            ref={contentRef}
+            className={`p-[10px] min-h-[44px] ${
+              animationState.isSliding ? 'transition-all duration-500 ease-in-out transform -translate-y-full opacity-0' : 'transition-transform duration-300 ease-out'
+            }`}
+            style={{
+              transform: `translateY(-${heightState.scrollOffset}px)`
+            }}
+          >
+            <p className="text-[#374151] text-sm" style={{ lineHeight: '24px' }}>
+              {animationState.displayedWords.join(' ')}
+            </p>
+            {animationState.showFooter && currentBlock && (
               <AnimationFooter icon={currentBlock.footerIcon} text={currentBlock.footerText} />
-            </div>
-          )}
+            )}
+          </div>
           
           {/* White gradient overlay to fade text under header - only show when scrolling */}
           {heightState.scrollOffset > 0 && (
