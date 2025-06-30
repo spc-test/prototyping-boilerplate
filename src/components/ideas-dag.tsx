@@ -85,7 +85,7 @@ function IdeaCard({ idea, position }: { idea: Idea; position: Position }) {
   )
 }
 
-function ConnectionLine({ from, to, allPositions }: { from: Position; to: Position; allPositions: Record<string, Position> }) {
+function ConnectionLine({ from, to, allPositions, allIdeas }: { from: Position; to: Position; allPositions: Record<string, Position>; allIdeas: Idea[] }) {
   // Check if a point is inside a card
   const isPointInsideCard = (point: Position, cardPos: Position) => {
     return point.x >= cardPos.x - 10 && 
@@ -94,12 +94,12 @@ function ConnectionLine({ from, to, allPositions }: { from: Position; to: Positi
            point.y <= cardPos.y + CARD_HEIGHT + 10
   }
 
-  // Get connection points for a card (top, bottom, left, right)
+  // Get connection points for a card with proper clearance from edges
   const getConnectionPoints = (pos: Position) => ({
-    top: { x: pos.x + CARD_WIDTH / 2, y: pos.y },
-    bottom: { x: pos.x + CARD_WIDTH / 2, y: pos.y + CARD_HEIGHT },
-    left: { x: pos.x, y: pos.y + CARD_HEIGHT / 2 },
-    right: { x: pos.x + CARD_WIDTH, y: pos.y + CARD_HEIGHT / 2 }
+    top: { x: pos.x + CARD_WIDTH / 2, y: pos.y - 5 },
+    bottom: { x: pos.x + CARD_WIDTH / 2, y: pos.y + CARD_HEIGHT + 5 },
+    left: { x: pos.x - 5, y: pos.y + CARD_HEIGHT / 2 },
+    right: { x: pos.x + CARD_WIDTH + 5, y: pos.y + CARD_HEIGHT / 2 }
   })
 
   // Check if a line segment intersects with any card
@@ -127,20 +127,69 @@ function ConnectionLine({ from, to, allPositions }: { from: Position; to: Positi
     const fromPoints = getConnectionPoints(from)
     const toPoints = getConnectionPoints(to)
     
-    // Try different connection combinations
+    // Find the parent idea to check for multiple children
+    const parentIdea = allIdeas.find(idea => {
+      const parentPos = Object.entries(allPositions).find(([id, pos]) => pos === from)?.[0]
+      return idea.id === parentIdea
+    })
+    
+    // Get all children of this parent
+    const parentId = Object.entries(allPositions).find(([id, pos]) => pos === from)?.[0]
+    const childrenOfParent = allIdeas.filter(idea => idea.parentId === parentId)
+    const hasMultipleChildren = childrenOfParent.length > 1
+    
+    // Calculate relative position
+    const deltaX = to.x - from.x
+    const deltaY = to.y - from.y
+    const isChildToRight = deltaX > CARD_WIDTH / 2
+    const isChildToLeft = deltaX < -CARD_WIDTH / 2
+    const isChildAbove = deltaY < -CARD_HEIGHT / 2
+    const isChildBelow = deltaY > CARD_HEIGHT / 2
+    
+    // If parent has multiple children spread horizontally and child is above
+    if (hasMultipleChildren && isChildAbove && (isChildToLeft || isChildToRight)) {
+      // Use side connections for better branching
+      if (isChildToRight) {
+        // Connect from right side of parent to bottom of child
+        const startPoint = fromPoints.right
+        const endPoint = toPoints.bottom
+        const clearanceY = from.y - 30 // Go up before turning
+        const path = `M ${startPoint.x} ${startPoint.y} L ${startPoint.x + 20} ${startPoint.y} L ${startPoint.x + 20} ${clearanceY} L ${endPoint.x} ${clearanceY} L ${endPoint.x} ${endPoint.y}`
+        
+        return {
+          start: startPoint,
+          end: endPoint,
+          path: path
+        }
+      } else if (isChildToLeft) {
+        // Connect from left side of parent to bottom of child
+        const startPoint = fromPoints.left
+        const endPoint = toPoints.bottom
+        const clearanceY = from.y - 30 // Go up before turning
+        const path = `M ${startPoint.x} ${startPoint.y} L ${startPoint.x - 20} ${startPoint.y} L ${startPoint.x - 20} ${clearanceY} L ${endPoint.x} ${clearanceY} L ${endPoint.x} ${endPoint.y}`
+        
+        return {
+          start: startPoint,
+          end: endPoint,
+          path: path
+        }
+      }
+    }
+    
+    // Try different connection combinations with adjusted priorities
     const connectionOptions = [
-      { from: fromPoints.top, to: toPoints.bottom, priority: 1 }, // Preferred: vertical connection
-      { from: fromPoints.bottom, to: toPoints.top, priority: 1 },
-      { from: fromPoints.right, to: toPoints.left, priority: 2 }, // Horizontal connections
-      { from: fromPoints.left, to: toPoints.right, priority: 2 },
-      { from: fromPoints.top, to: toPoints.left, priority: 3 }, // Diagonal connections
-      { from: fromPoints.top, to: toPoints.right, priority: 3 },
-      { from: fromPoints.bottom, to: toPoints.left, priority: 3 },
-      { from: fromPoints.bottom, to: toPoints.right, priority: 3 },
-      { from: fromPoints.left, to: toPoints.top, priority: 3 },
-      { from: fromPoints.left, to: toPoints.bottom, priority: 3 },
-      { from: fromPoints.right, to: toPoints.top, priority: 3 },
-      { from: fromPoints.right, to: toPoints.bottom, priority: 3 }
+      { from: fromPoints.bottom, to: toPoints.top, priority: 1 }, // Preferred: child above parent
+      { from: fromPoints.top, to: toPoints.bottom, priority: 2 }, // Parent above child
+      { from: fromPoints.right, to: toPoints.left, priority: 3 }, // Horizontal connections
+      { from: fromPoints.left, to: toPoints.right, priority: 3 },
+      { from: fromPoints.top, to: toPoints.left, priority: 4 }, // Diagonal connections
+      { from: fromPoints.top, to: toPoints.right, priority: 4 },
+      { from: fromPoints.bottom, to: toPoints.left, priority: 4 },
+      { from: fromPoints.bottom, to: toPoints.right, priority: 4 },
+      { from: fromPoints.left, to: toPoints.top, priority: 4 },
+      { from: fromPoints.left, to: toPoints.bottom, priority: 4 },
+      { from: fromPoints.right, to: toPoints.top, priority: 4 },
+      { from: fromPoints.right, to: toPoints.bottom, priority: 4 }
     ]
 
     // Sort by priority and test for intersections
@@ -165,6 +214,34 @@ function ConnectionLine({ from, to, allPositions }: { from: Position; to: Positi
       const midX = startPoint.x + (endPoint.x - startPoint.x) / 2
       const midY = startPoint.y + (endPoint.y - startPoint.y) / 2
       
+      // For vertical connections, add clearance from card edges
+      if (Math.abs(startPoint.x - endPoint.x) < 5) {
+        // Straight vertical line - add some clearance
+        const clearanceDistance = 25
+        let adjustedStartY = startPoint.y
+        let adjustedEndY = endPoint.y
+        
+        if (startPoint.y < endPoint.y) {
+          // Parent above child
+          adjustedStartY = startPoint.y + clearanceDistance
+          adjustedEndY = endPoint.y - clearanceDistance
+        } else {
+          // Child above parent  
+          adjustedStartY = startPoint.y - clearanceDistance
+          adjustedEndY = endPoint.y + clearanceDistance
+        }
+        
+        const path = `M ${startPoint.x} ${startPoint.y} L ${startPoint.x} ${adjustedStartY} L ${startPoint.x} ${adjustedEndY} L ${endPoint.x} ${endPoint.y}`
+        
+        if (!lineIntersectsCards({ x: startPoint.x, y: adjustedStartY }, { x: startPoint.x, y: adjustedEndY })) {
+          return {
+            start: startPoint,
+            end: endPoint,
+            path: path
+          }
+        }
+      }
+      
       // Try L-shaped path (horizontal first, then vertical)
       const horizontalFirst = `M ${startPoint.x} ${startPoint.y} L ${endPoint.x} ${startPoint.y} L ${endPoint.x} ${endPoint.y}`
       if (!lineIntersectsCards({ x: startPoint.x, y: startPoint.y }, { x: endPoint.x, y: startPoint.y }) &&
@@ -187,11 +264,12 @@ function ConnectionLine({ from, to, allPositions }: { from: Position; to: Positi
         }
       }
       
-      // Try stepped path with midpoint
-      const steppedPath = `M ${startPoint.x} ${startPoint.y} L ${startPoint.x} ${midY} L ${endPoint.x} ${midY} L ${endPoint.x} ${endPoint.y}`
-      if (!lineIntersectsCards({ x: startPoint.x, y: startPoint.y }, { x: startPoint.x, y: midY }) &&
-          !lineIntersectsCards({ x: startPoint.x, y: midY }, { x: endPoint.x, y: midY }) &&
-          !lineIntersectsCards({ x: endPoint.x, y: midY }, { x: endPoint.x, y: endPoint.y })) {
+      // Try stepped path with better clearance
+      const clearanceDistance = 35
+      const steppedPath = `M ${startPoint.x} ${startPoint.y} L ${startPoint.x} ${midY - clearanceDistance} L ${endPoint.x} ${midY - clearanceDistance} L ${endPoint.x} ${endPoint.y}`
+      if (!lineIntersectsCards({ x: startPoint.x, y: startPoint.y }, { x: startPoint.x, y: midY - clearanceDistance }) &&
+          !lineIntersectsCards({ x: startPoint.x, y: midY - clearanceDistance }, { x: endPoint.x, y: midY - clearanceDistance }) &&
+          !lineIntersectsCards({ x: endPoint.x, y: midY - clearanceDistance }, { x: endPoint.x, y: endPoint.y })) {
         return {
           start: startPoint,
           end: endPoint,
@@ -200,10 +278,11 @@ function ConnectionLine({ from, to, allPositions }: { from: Position; to: Positi
       }
     }
     
-    // Fallback to default top-to-bottom connection
-    const fallbackStart = fromPoints.top
-    const fallbackEnd = toPoints.bottom
-    const fallbackMidY = fallbackStart.y + (fallbackEnd.y - fallbackStart.y) / 2
+    // Fallback to default connection with clearance
+    const fallbackStart = fromPoints.bottom
+    const fallbackEnd = toPoints.top
+    const clearanceDistance = 35
+    const fallbackMidY = fallbackStart.y + clearanceDistance
     
     return {
       start: fallbackStart,
@@ -410,6 +489,7 @@ export default function IdeasDAG() {
                     from={positions[idea.parentId!]}
                     to={positions[idea.id]}
                     allPositions={positions}
+                    allIdeas={currentIdeas}
                   />
                 ))}
             </g>
