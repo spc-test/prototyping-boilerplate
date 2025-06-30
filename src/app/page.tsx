@@ -12,10 +12,10 @@ export default function Home() {
       setPressedKey(key);
       setShowKey(true);
 
-      // Hide the key after 200ms
+      // Hide the key after 600ms
       setTimeout(() => {
         setShowKey(false);
-      }, 200);
+      }, 600);
     };
 
     window.addEventListener("keydown", handleKeyDown);
