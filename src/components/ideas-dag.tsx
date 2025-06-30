@@ -17,8 +17,8 @@ interface Position {
 
 const CARD_WIDTH = 280
 const CARD_HEIGHT = 100
-const MIN_HORIZONTAL_SPACING = 50
-const VERTICAL_SPACING = 180
+const MIN_HORIZONTAL_SPACING = 25
+const VERTICAL_SPACING = 90
 
 const creatorColors = {
   'Anna Baranova': 'bg-blue-50 border-blue-200',
@@ -184,13 +184,13 @@ function calculateLayout(ideas: Idea[], containerWidth: number): Record<string, 
         const rowWidth = cardsInThisRow * CARD_WIDTH + (cardsInThisRow - 1) * actualHorizontalSpacing
         const startX = (availableWidth - rowWidth) / 2 + 50
         const x = startX + col * (CARD_WIDTH + actualHorizontalSpacing)
-        const y = currentY + row * (CARD_HEIGHT + 60) // Extra spacing between rows within same level
+        const y = currentY + row * (CARD_HEIGHT + 30) // Extra spacing between rows within same level
         
         positions[nodeId] = { x, y }
       })
       
       // Update currentY for next level
-      currentY += rows * (CARD_HEIGHT + 60) + VERTICAL_SPACING
+      currentY += rows * (CARD_HEIGHT + 30) + VERTICAL_SPACING
     })
 
   return positions
