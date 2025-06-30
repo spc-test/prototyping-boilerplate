@@ -27,34 +27,40 @@ export const ConnectionLine: React.FC<ConnectionLineProps> = ({
 
   return (
     <svg
-      className={`absolute inset-0 pointer-events-none ${className}`}
-      style={{ width: '100%', height: '100%', zIndex: 1 }}
+      className={`absolute pointer-events-none ${className}`}
+      style={{ 
+        width: '100%', 
+        height: '100%', 
+        zIndex: 10,
+        left: 0,
+        top: 0
+      }}
     >
       <defs>
         <marker
           id={`arrowhead-${from.x}-${from.y}-${to.x}-${to.y}`}
-          markerWidth="12"
-          markerHeight="8"
-          refX="11"
-          refY="4"
+          markerWidth="16"
+          markerHeight="12"
+          refX="15"
+          refY="6"
           orient="auto"
           markerUnits="strokeWidth"
         >
           <polygon
-            points="0 0, 12 4, 0 8"
-            fill="hsl(var(--primary))"
-            stroke="hsl(var(--primary))"
+            points="0 2, 16 6, 0 10"
+            fill="#3b82f6"
+            stroke="#3b82f6"
             strokeWidth="1"
           />
         </marker>
       </defs>
       <path
         d={pathData}
-        stroke="hsl(var(--primary))"
-        strokeWidth="2.5"
+        stroke="#3b82f6"
+        strokeWidth="3"
         fill="none"
-        strokeDasharray="6,3"
-        opacity="0.7"
+        strokeDasharray="8,4"
+        opacity="0.9"
         markerEnd={`url(#arrowhead-${from.x}-${from.y}-${to.x}-${to.y})`}
       />
     </svg>
