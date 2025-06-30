@@ -25,11 +25,32 @@ export const ConnectionLine: React.FC<ConnectionLineProps> = ({
 
   const pathData = `M ${fromCenter.x} ${fromCenter.y} C ${controlPoint1X} ${controlPoint1Y}, ${controlPoint2X} ${controlPoint2Y}, ${toCenterX} ${toCenterY}`;
 
+  // Calculate arrow direction for proper arrow head rotation
+  const arrowAngle = Math.atan2(toCenterY - controlPoint2Y, toCenterX - controlPoint2X);
+  const arrowSize = 8;
+
   return (
     <svg
       className={`absolute inset-0 pointer-events-none ${className}`}
       style={{ zIndex: -1 }}
     >
+      <defs>
+        <marker
+          id={`arrowhead-${from.x}-${from.y}-${to.x}-${to.y}`}
+          markerWidth="10"
+          markerHeight="7"
+          refX="9"
+          refY="3.5"
+          orient="auto"
+          markerUnits="strokeWidth"
+        >
+          <polygon
+            points="0 0, 10 3.5, 0 7"
+            fill="hsl(var(--border))"
+            opacity="0.8"
+          />
+        </marker>
+      </defs>
       <path
         d={pathData}
         stroke="hsl(var(--border))"
@@ -37,14 +58,7 @@ export const ConnectionLine: React.FC<ConnectionLineProps> = ({
         fill="none"
         strokeDasharray="5,5"
         opacity="0.6"
-      />
-      {/* Arrow head at the end */}
-      <circle
-        cx={toCenterX}
-        cy={toCenterY}
-        r="3"
-        fill="hsl(var(--border))"
-        opacity="0.8"
+        markerEnd={`url(#arrowhead-${from.x}-${from.y}-${to.x}-${to.y})`}
       />
     </svg>
   );
