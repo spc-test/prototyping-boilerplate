@@ -3,12 +3,21 @@ import { Task } from '@/types/task';
 
 const mockTasks: Task[] = [
   {
+    id: '0',
+    title: 'Initial Project Planning',
+    assignee: 'Alex Chen',
+    status: 'completed',
+    type: 'default',
+    position: { row: 0, column: 1 },
+  },
+  {
     id: '1',
     title: 'Prototype Evaluation: Share Observations & Feedback',
     assignee: 'Sarah Chen',
     status: 'completed',
     type: 'review',
-    position: { row: 0, column: 1 },
+    parentId: '0',
+    position: { row: 1, column: 1 },
   },
   {
     id: '2',
@@ -17,7 +26,7 @@ const mockTasks: Task[] = [
     status: 'completed',
     type: 'review',
     parentId: '1',
-    position: { row: 1, column: 0 },
+    position: { row: 2, column: 0 },
   },
   {
     id: '3',
@@ -26,7 +35,7 @@ const mockTasks: Task[] = [
     status: 'completed',
     type: 'review',
     parentId: '1',
-    position: { row: 1, column: 2 },
+    position: { row: 2, column: 2 },
   },
   {
     id: '4',
@@ -35,7 +44,7 @@ const mockTasks: Task[] = [
     status: 'in-progress',
     type: 'implementation',
     parentId: '2',
-    position: { row: 2, column: 0 },
+    position: { row: 3, column: 0 },
   },
   {
     id: '5',
@@ -44,7 +53,7 @@ const mockTasks: Task[] = [
     status: 'pending',
     type: 'implementation',
     parentId: '3',
-    position: { row: 2, column: 2 },
+    position: { row: 3, column: 2 },
   },
   {
     id: '6',
@@ -53,7 +62,7 @@ const mockTasks: Task[] = [
     status: 'in-progress',
     type: 'implementation',
     parentId: '4',
-    position: { row: 3, column: 0 },
+    position: { row: 4, column: 0 },
   },
   {
     id: '7',
@@ -62,7 +71,7 @@ const mockTasks: Task[] = [
     status: 'pending',
     type: 'testing',
     parentId: '5',
-    position: { row: 3, column: 2 },
+    position: { row: 4, column: 2 },
   },
   {
     id: '8',
@@ -71,7 +80,7 @@ const mockTasks: Task[] = [
     status: 'pending',
     type: 'review',
     parentId: '6',
-    position: { row: 4, column: 0 },
+    position: { row: 5, column: 0 },
   },
   {
     id: '9',
@@ -80,7 +89,7 @@ const mockTasks: Task[] = [
     status: 'pending',
     type: 'testing',
     parentId: '7',
-    position: { row: 4, column: 2 },
+    position: { row: 5, column: 2 },
   },
   {
     id: '10',
@@ -89,7 +98,7 @@ const mockTasks: Task[] = [
     status: 'pending',
     type: 'implementation',
     parentId: '8',
-    position: { row: 5, column: 1 },
+    position: { row: 6, column: 1 },
   },
   {
     id: '11',
@@ -98,7 +107,7 @@ const mockTasks: Task[] = [
     status: 'pending',
     type: 'testing',
     parentId: '10',
-    position: { row: 6, column: 1 },
+    position: { row: 7, column: 1 },
   },
   {
     id: '12',
@@ -107,7 +116,7 @@ const mockTasks: Task[] = [
     status: 'pending',
     type: 'testing',
     parentId: '9',
-    position: { row: 6, column: 1 },
+    position: { row: 7, column: 1 },
   },
   {
     id: '13',
@@ -116,7 +125,7 @@ const mockTasks: Task[] = [
     status: 'pending',
     type: 'implementation',
     parentId: '11',
-    position: { row: 7, column: 1 },
+    position: { row: 8, column: 1 },
   },
   {
     id: '14',
@@ -125,7 +134,7 @@ const mockTasks: Task[] = [
     status: 'pending',
     type: 'implementation',
     parentId: '13',
-    position: { row: 8, column: 1 },
+    position: { row: 9, column: 1 },
   },
 ];
 
