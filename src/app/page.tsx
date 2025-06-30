@@ -1,5 +1,9 @@
+import IdeasDAG from '@/components/ideas-dag'
+
 export default function Home() {
   return (
-    <div></div>
+    <div className="container mx-auto px-4 py-8">
+      <IdeasDAG />
+    </div>
   )
 }
