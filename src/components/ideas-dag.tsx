@@ -244,8 +244,11 @@ function ConnectionLine({ from, to, allPositions, allIdeas }: { from: Position; 
     
     // Test each connection option
     for (const { from: startPoint, to: endPoint } of bestConnections) {
-      // Try direct connection first (for very close cards or when no obstacles)
-      if (!lineIntersectsCards(startPoint, endPoint)) {
+      // Only allow direct connections if they are perfectly horizontal or vertical
+      const isHorizontal = Math.abs(startPoint.y - endPoint.y) < 1
+      const isVertical = Math.abs(startPoint.x - endPoint.x) < 1
+      
+      if ((isHorizontal || isVertical) && !lineIntersectsCards(startPoint, endPoint)) {
         return {
           start: startPoint,
           end: endPoint,
@@ -253,7 +256,7 @@ function ConnectionLine({ from, to, allPositions, allIdeas }: { from: Position; 
         }
       }
       
-      // Try L-shaped paths with minimal direction changes
+      // For all other cases, use orthogonal L-shaped paths
       
       // Horizontal first, then vertical
       const midPoint1 = { x: endPoint.x, y: startPoint.y }
