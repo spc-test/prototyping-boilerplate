@@ -86,10 +86,12 @@ function IdeaCard({ idea, position }: { idea: Idea; position: Position }) {
 }
 
 function ConnectionLine({ from, to }: { from: Position; to: Position }) {
+  // Since we inverted the layout, parent is now visually below child
+  // So we draw from parent (from) at bottom to child (to) at top
   const fromX = from.x + CARD_WIDTH / 2
-  const fromY = from.y + CARD_HEIGHT
+  const fromY = from.y // Connect from top of parent card
   const toX = to.x + CARD_WIDTH / 2
-  const toY = to.y
+  const toY = to.y + CARD_HEIGHT // Connect to bottom of child card
 
   // Create orthogonal path with 90-degree turns only
   const midY = fromY + (toY - fromY) / 2
@@ -146,10 +148,13 @@ function calculateLayout(ideas: Idea[]): Record<string, Position> {
     levelNodes[level].push(nodeId)
   })
 
-  // Position nodes
+  // Find the maximum level to invert the layout
+  const maxLevel = Math.max(...Object.values(levels))
+
+  // Position nodes (inverted: root ideas at bottom, remixes grow upward)
   Object.entries(levelNodes).forEach(([levelStr, nodeIds]) => {
     const level = parseInt(levelStr)
-    const y = level * VERTICAL_SPACING + 50
+    const y = (maxLevel - level) * VERTICAL_SPACING + 50
     
     nodeIds.forEach((nodeId, index) => {
       const totalWidth = nodeIds.length * CARD_WIDTH + (nodeIds.length - 1) * HORIZONTAL_SPACING
