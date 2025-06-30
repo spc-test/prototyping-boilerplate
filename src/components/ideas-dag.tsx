@@ -7,7 +7,7 @@ interface Idea {
   id: string
   title: string
   creator: string
-  parentIds: string[]
+  parentId?: string // Each idea can only be remixed from one parent
 }
 
 interface Position {
@@ -30,36 +30,36 @@ const creatorColors = {
 
 const sampleDatasets = {
   linear: [
-    { id: '1', title: 'Initial Idea: AI-Powered Code Assistant', creator: 'Anna Baranova', parentIds: [] },
-    { id: '2', title: 'Add Voice Commands Integration', creator: 'Anton Sukhonos­enko', parentIds: ['1'] },
-    { id: '3', title: 'Implement Multi-Language Support', creator: 'Sarah Chen', parentIds: ['2'] },
-    { id: '4', title: 'Add Real-time Collaboration Features', creator: 'Mike Johnson', parentIds: ['3'] }
+    { id: '1', title: 'Initial Idea: AI-Powered Code Assistant', creator: 'Anna Baranova' },
+    { id: '2', title: 'Add Voice Commands Integration', creator: 'Anton Sukhonos­enko', parentId: '1' },
+    { id: '3', title: 'Implement Multi-Language Support', creator: 'Sarah Chen', parentId: '2' },
+    { id: '4', title: 'Add Real-time Collaboration Features', creator: 'Mike Johnson', parentId: '3' }
   ],
   branching: [
-    { id: '1', title: 'Core Platform Architecture', creator: 'Anna Baranova', parentIds: [] },
-    { id: '2', title: 'Frontend React Components', creator: 'Anton Sukhonos­enko', parentIds: ['1'] },
-    { id: '3', title: 'Backend API Services', creator: 'Sarah Chen', parentIds: ['1'] },
-    { id: '4', title: 'Database Schema Design', creator: 'Mike Johnson', parentIds: ['1'] },
-    { id: '5', title: 'User Authentication Module', creator: 'Anna Baranova', parentIds: ['2', '3'] },
-    { id: '6', title: 'Data Analytics Dashboard', creator: 'Anton Sukhonos­enko', parentIds: ['3', '4'] }
+    { id: '1', title: 'Core Platform Architecture', creator: 'Anna Baranova' },
+    { id: '2', title: 'Frontend React Components', creator: 'Anton Sukhonos­enko', parentId: '1' },
+    { id: '3', title: 'Backend API Services', creator: 'Sarah Chen', parentId: '1' },
+    { id: '4', title: 'Database Schema Design', creator: 'Mike Johnson', parentId: '1' },
+    { id: '5', title: 'User Authentication Module', creator: 'Anna Baranova', parentId: '2' },
+    { id: '6', title: 'Data Analytics Dashboard', creator: 'Anton Sukhonos­enko', parentId: '3' }
   ],
   complex: [
-    { id: '1', title: 'Product Vision: Smart Workspace', creator: 'Anna Baranova', parentIds: [] },
-    { id: '2', title: 'AI Assistant Integration', creator: 'Anton Sukhonos­enko', parentIds: ['1'] },
-    { id: '3', title: 'Team Collaboration Hub', creator: 'Sarah Chen', parentIds: ['1'] },
-    { id: '4', title: 'Voice-Activated Commands', creator: 'Mike Johnson', parentIds: ['2'] },
-    { id: '5', title: 'Smart Document Processing', creator: 'Anna Baranova', parentIds: ['2'] },
-    { id: '6', title: 'Real-time Video Integration', creator: 'Anton Sukhonos­enko', parentIds: ['3'] },
-    { id: '7', title: 'Advanced Search & Filter', creator: 'Sarah Chen', parentIds: ['3'] },
-    { id: '8', title: 'Mobile App Companion', creator: 'Mike Johnson', parentIds: ['4', '5'] },
-    { id: '9', title: 'Unified Communication Platform', creator: 'Anna Baranova', parentIds: ['6', '7'] },
-    { id: '10', title: 'Cross-Platform Sync', creator: 'Anton Sukhonos­enko', parentIds: ['8', '9'] }
+    { id: '1', title: 'Product Vision: Smart Workspace', creator: 'Anna Baranova' },
+    { id: '2', title: 'AI Assistant Integration', creator: 'Anton Sukhonos­enko', parentId: '1' },
+    { id: '3', title: 'Team Collaboration Hub', creator: 'Sarah Chen', parentId: '1' },
+    { id: '4', title: 'Voice-Activated Commands', creator: 'Mike Johnson', parentId: '2' },
+    { id: '5', title: 'Smart Document Processing', creator: 'Anna Baranova', parentId: '2' },
+    { id: '6', title: 'Real-time Video Integration', creator: 'Anton Sukhonos­enko', parentId: '3' },
+    { id: '7', title: 'Advanced Search & Filter', creator: 'Sarah Chen', parentId: '3' },
+    { id: '8', title: 'Mobile App Companion', creator: 'Mike Johnson', parentId: '4' },
+    { id: '9', title: 'Unified Communication Platform', creator: 'Anna Baranova', parentId: '6' },
+    { id: '10', title: 'Cross-Platform Sync', creator: 'Anton Sukhonos­enko', parentId: '8' }
   ],
   diamond: [
-    { id: '1', title: 'Initial Research Phase', creator: 'Anna Baranova', parentIds: [] },
-    { id: '2', title: 'User Interface Design', creator: 'Anton Sukhonos­enko', parentIds: ['1'] },
-    { id: '3', title: 'Backend Development', creator: 'Sarah Chen', parentIds: ['1'] },
-    { id: '4', title: 'Integration & Testing', creator: 'Mike Johnson', parentIds: ['2', '3'] }
+    { id: '1', title: 'Initial Research Phase', creator: 'Anna Baranova' },
+    { id: '2', title: 'User Interface Design', creator: 'Anton Sukhonos­enko', parentId: '1' },
+    { id: '3', title: 'Backend Development', creator: 'Sarah Chen', parentId: '1' },
+    { id: '4', title: 'Integration & Testing', creator: 'Mike Johnson', parentId: '2' }
   ]
 }
 
@@ -96,13 +96,16 @@ function ConnectionLine({ from, to }: { from: Position; to: Position }) {
   const pathData = `M ${fromX} ${fromY} C ${fromX} ${midY} ${toX} ${midY} ${toX} ${toY}`
 
   return (
-    <path
-      d={pathData}
-      fill="none"
-      stroke="#E0E0E0"
-      strokeWidth="2"
-      className="transition-all duration-200 hover:stroke-gray-400"
-    />
+    <g>
+      <path
+        d={pathData}
+        fill="none"
+        stroke="#E0E0E0"
+        strokeWidth="2"
+        className="transition-all duration-200 hover:stroke-gray-400"
+        markerEnd="url(#arrowhead)"
+      />
+    </g>
   )
 }
 
@@ -122,10 +125,10 @@ function calculateLayout(ideas: Idea[]): Record<string, Position> {
     visiting.add(nodeId)
     
     const node = ideas.find(n => n.id === nodeId)
-    if (!node || node.parentIds.length === 0) {
+    if (!node || !node.parentId) {
       levels[nodeId] = 0
     } else {
-      levels[nodeId] = Math.max(...node.parentIds.map(pid => calculateLevel(pid) + 1))
+      levels[nodeId] = calculateLevel(node.parentId) + 1
     }
     
     visiting.delete(nodeId)
@@ -220,16 +223,29 @@ export default function IdeasDAG() {
             width={svgBounds.width}
             height={svgBounds.height}
           >
+            <defs>
+              <marker
+                id="arrowhead"
+                markerWidth="10"
+                markerHeight="7"
+                refX="9"
+                refY="3.5"
+                orient="auto"
+                fill="#E0E0E0"
+              >
+                <polygon points="0 0, 10 3.5, 0 7" />
+              </marker>
+            </defs>
             <g transform={`translate(${svgBounds.offsetX || 0}, ${svgBounds.offsetY || 0})`}>
-              {currentIdeas.map(idea =>
-                idea.parentIds.map(parentId => (
+              {currentIdeas
+                .filter(idea => idea.parentId)
+                .map(idea => (
                   <ConnectionLine
-                    key={`${parentId}-${idea.id}`}
-                    from={positions[parentId]}
+                    key={`${idea.parentId}-${idea.id}`}
+                    from={positions[idea.parentId!]}
                     to={positions[idea.id]}
                   />
-                ))
-              )}
+                ))}
             </g>
           </svg>
 
