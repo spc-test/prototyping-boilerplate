@@ -18,7 +18,7 @@ interface Position {
 const CARD_WIDTH = 280
 const CARD_HEIGHT = 100
 const MIN_HORIZONTAL_SPACING = 25
-const VERTICAL_SPACING = 90
+const VERTICAL_SPACING = 45
 
 const creatorColors = {
   'Anna Baranova': 'bg-blue-50 border-blue-200',
@@ -93,10 +93,21 @@ function ConnectionLine({ from, to }: { from: Position; to: Position }) {
   const toX = to.x + CARD_WIDTH / 2
   const toY = to.y + CARD_HEIGHT // Connect to bottom of child card
 
-  // Create orthogonal path with 90-degree turns only
-  const midY = fromY + (toY - fromY) / 2
+  // Special case: straight vertical line (when cards are directly above/below each other)
+  const isStraightVertical = Math.abs(fromX - toX) < 5 // Allow small tolerance
   
-  const pathData = `M ${fromX} ${fromY} L ${fromX} ${midY} L ${toX} ${midY} L ${toX} ${toY}`
+  let pathData: string
+  
+  if (isStraightVertical) {
+    // For straight vertical connections, make them much shorter
+    const shortFromY = fromY + CARD_HEIGHT * 0.8 // Start closer to parent card
+    const shortToY = toY - CARD_HEIGHT * 0.3 // End closer to child card
+    pathData = `M ${fromX} ${shortFromY} L ${toX} ${shortToY}`
+  } else {
+    // Create orthogonal path with 90-degree turns only
+    const midY = fromY + (toY - fromY) / 2
+    pathData = `M ${fromX} ${fromY} L ${fromX} ${midY} L ${toX} ${midY} L ${toX} ${toY}`
+  }
 
   return (
     <g>
@@ -184,13 +195,13 @@ function calculateLayout(ideas: Idea[], containerWidth: number): Record<string, 
         const rowWidth = cardsInThisRow * CARD_WIDTH + (cardsInThisRow - 1) * actualHorizontalSpacing
         const startX = (availableWidth - rowWidth) / 2 + 50
         const x = startX + col * (CARD_WIDTH + actualHorizontalSpacing)
-        const y = currentY + row * (CARD_HEIGHT + 30) // Extra spacing between rows within same level
+        const y = currentY + row * (CARD_HEIGHT + 15) // Extra spacing between rows within same level
         
         positions[nodeId] = { x, y }
       })
       
       // Update currentY for next level
-      currentY += rows * (CARD_HEIGHT + 30) + VERTICAL_SPACING
+      currentY += rows * (CARD_HEIGHT + 15) + VERTICAL_SPACING
     })
 
   return positions
