@@ -86,14 +86,6 @@ function IdeaCard({ idea, position }: { idea: Idea; position: Position }) {
 }
 
 function ConnectionLine({ from, to, allPositions, allIdeas }: { from: Position; to: Position; allPositions: Record<string, Position>; allIdeas: Idea[] }) {
-  // Check if a point is inside a card
-  const isPointInsideCard = (point: Position, cardPos: Position) => {
-    return point.x >= cardPos.x - 10 && 
-           point.x <= cardPos.x + CARD_WIDTH + 10 && 
-           point.y >= cardPos.y - 10 && 
-           point.y <= cardPos.y + CARD_HEIGHT + 10
-  }
-
   // Get connection points for a card with proper clearance from edges
   const getConnectionPoints = (pos: Position) => ({
     top: { x: pos.x + CARD_WIDTH / 2, y: pos.y - 5 },
@@ -102,23 +94,49 @@ function ConnectionLine({ from, to, allPositions, allIdeas }: { from: Position; 
     right: { x: pos.x + CARD_WIDTH + 5, y: pos.y + CARD_HEIGHT / 2 }
   })
 
+  // Improved line-rectangle intersection detection
+  const lineIntersectsCard = (start: Position, end: Position, cardPos: Position) => {
+    // Add padding to make intersection detection more conservative
+    const padding = 15
+    const cardLeft = cardPos.x - padding
+    const cardRight = cardPos.x + CARD_WIDTH + padding
+    const cardTop = cardPos.y - padding
+    const cardBottom = cardPos.y + CARD_HEIGHT + padding
+    
+    // Use proper line-rectangle intersection algorithm
+    const x1 = start.x, y1 = start.y
+    const x2 = end.x, y2 = end.y
+    
+    // Check if line endpoints are inside the padded rectangle
+    const startInside = x1 >= cardLeft && x1 <= cardRight && y1 >= cardTop && y1 <= cardBottom
+    const endInside = x2 >= cardLeft && x2 <= cardRight && y2 >= cardTop && y2 <= cardBottom
+    
+    if (startInside || endInside) return true
+    
+    // Check if line intersects any of the rectangle edges
+    const intersectsEdge = (ax1: number, ay1: number, ax2: number, ay2: number, bx1: number, by1: number, bx2: number, by2: number) => {
+      const denom = (ax2 - ax1) * (by2 - by1) - (ay2 - ay1) * (bx2 - bx1)
+      if (Math.abs(denom) < 1e-10) return false // Lines are parallel
+      
+      const t = ((bx1 - ax1) * (by2 - by1) - (by1 - ay1) * (bx2 - bx1)) / denom
+      const u = ((bx1 - ax1) * (ay2 - ay1) - (by1 - ay1) * (ax2 - ax1)) / denom
+      
+      return t >= 0 && t <= 1 && u >= 0 && u <= 1
+    }
+    
+    // Check intersection with all four edges of the rectangle
+    return intersectsEdge(x1, y1, x2, y2, cardLeft, cardTop, cardRight, cardTop) ||    // Top edge
+           intersectsEdge(x1, y1, x2, y2, cardRight, cardTop, cardRight, cardBottom) || // Right edge
+           intersectsEdge(x1, y1, x2, y2, cardRight, cardBottom, cardLeft, cardBottom) || // Bottom edge
+           intersectsEdge(x1, y1, x2, y2, cardLeft, cardBottom, cardLeft, cardTop)       // Left edge
+  }
+
   // Check if a line segment intersects with any card
   const lineIntersectsCards = (start: Position, end: Position) => {
-    const allCards = Object.values(allPositions)
-    return allCards.some(cardPos => {
+    return Object.values(allPositions).some(cardPos => {
       // Skip the cards we're connecting from/to
       if (cardPos === from || cardPos === to) return false
-      
-      // Simple bounding box intersection check
-      const lineMinX = Math.min(start.x, end.x)
-      const lineMaxX = Math.max(start.x, end.x)
-      const lineMinY = Math.min(start.y, end.y)
-      const lineMaxY = Math.max(start.y, end.y)
-      
-      return !(lineMaxX < cardPos.x || 
-               lineMinX > cardPos.x + CARD_WIDTH ||
-               lineMaxY < cardPos.y || 
-               lineMinY > cardPos.y + CARD_HEIGHT)
+      return lineIntersectsCard(start, end, cardPos)
     })
   }
 
@@ -134,158 +152,145 @@ function ConnectionLine({ from, to, allPositions, allIdeas }: { from: Position; 
     const childrenOfParent = allIdeas.filter(idea => idea.parentId === parentId)
     const hasMultipleChildren = childrenOfParent.length > 1
     
-    // Calculate relative position
+    // Calculate relative position and distances
     const deltaX = to.x - from.x
     const deltaY = to.y - from.y
-    const isChildToRight = deltaX > CARD_WIDTH / 2
-    const isChildToLeft = deltaX < -CARD_WIDTH / 2
-    const isChildAbove = deltaY < -CARD_HEIGHT / 2
-    const isChildBelow = deltaY > CARD_HEIGHT / 2
+    const centerToCenter = Math.sqrt(deltaX * deltaX + deltaY * deltaY)
     
-    // If parent has multiple children spread horizontally and child is above
+    // Determine optimal connection strategy based on card positions
+    const isChildToRight = deltaX > CARD_WIDTH * 0.3
+    const isChildToLeft = deltaX < -CARD_WIDTH * 0.3
+    const isChildAbove = deltaY < -CARD_HEIGHT * 0.3
+    const isChildBelow = deltaY > CARD_HEIGHT * 0.3
+    const isAlmostHorizontal = Math.abs(deltaY) < CARD_HEIGHT * 0.5
+    const isAlmostVertical = Math.abs(deltaX) < CARD_WIDTH * 0.5
+    // Smart connection point selection based on card positions
+    let bestConnections = []
+    
+    // Priority 1: For multiple children, use side connections when appropriate
     if (hasMultipleChildren && isChildAbove && (isChildToLeft || isChildToRight)) {
-      // Use side connections for better branching with single direction change
       if (isChildToRight) {
-        // Connect from right side of parent directly to bottom of child with L-shape
-        const startPoint = fromPoints.right
-        const endPoint = toPoints.bottom
-        // Simple L-shaped path: go right, then up
-        const path = `M ${startPoint.x} ${startPoint.y} L ${endPoint.x} ${startPoint.y} L ${endPoint.x} ${endPoint.y}`
-        
-        return {
-          start: startPoint,
-          end: endPoint,
-          path: path
-        }
+        bestConnections.push({ from: fromPoints.right, to: toPoints.bottom })
+        bestConnections.push({ from: fromPoints.right, to: toPoints.left })
       } else if (isChildToLeft) {
-        // Connect from left side of parent directly to bottom of child with L-shape
-        const startPoint = fromPoints.left
-        const endPoint = toPoints.bottom
-        // Simple L-shaped path: go left, then up
-        const path = `M ${startPoint.x} ${startPoint.y} L ${endPoint.x} ${startPoint.y} L ${endPoint.x} ${endPoint.y}`
-        
-        return {
-          start: startPoint,
-          end: endPoint,
-          path: path
-        }
+        bestConnections.push({ from: fromPoints.left, to: toPoints.bottom })
+        bestConnections.push({ from: fromPoints.left, to: toPoints.right })
       }
     }
     
-    // Try different connection combinations with adjusted priorities
-    const connectionOptions = [
-      { from: fromPoints.bottom, to: toPoints.top, priority: 1 }, // Preferred: child above parent
-      { from: fromPoints.top, to: toPoints.bottom, priority: 2 }, // Parent above child
-      { from: fromPoints.right, to: toPoints.left, priority: 3 }, // Horizontal connections
-      { from: fromPoints.left, to: toPoints.right, priority: 3 },
-      { from: fromPoints.top, to: toPoints.left, priority: 4 }, // Diagonal connections
-      { from: fromPoints.top, to: toPoints.right, priority: 4 },
-      { from: fromPoints.bottom, to: toPoints.left, priority: 4 },
-      { from: fromPoints.bottom, to: toPoints.right, priority: 4 },
-      { from: fromPoints.left, to: toPoints.top, priority: 4 },
-      { from: fromPoints.left, to: toPoints.bottom, priority: 4 },
-      { from: fromPoints.right, to: toPoints.top, priority: 4 },
-      { from: fromPoints.right, to: toPoints.bottom, priority: 4 }
+    // Priority 2: For horizontal layouts, prefer side connections
+    if (isAlmostHorizontal) {
+      if (isChildToRight) {
+        bestConnections.push({ from: fromPoints.right, to: toPoints.left })
+        bestConnections.push({ from: fromPoints.right, to: toPoints.bottom })
+        bestConnections.push({ from: fromPoints.right, to: toPoints.top })
+      } else if (isChildToLeft) {
+        bestConnections.push({ from: fromPoints.left, to: toPoints.right })
+        bestConnections.push({ from: fromPoints.left, to: toPoints.bottom })
+        bestConnections.push({ from: fromPoints.left, to: toPoints.top })
+      }
+    }
+    
+    // Priority 3: For vertical layouts, prefer top/bottom connections
+    if (isAlmostVertical) {
+      if (isChildAbove) {
+        bestConnections.push({ from: fromPoints.top, to: toPoints.bottom })
+      } else if (isChildBelow) {
+        bestConnections.push({ from: fromPoints.bottom, to: toPoints.top })
+      }
+    }
+    
+    // Priority 4: Standard combinations based on relative position
+    if (isChildAbove) {
+      bestConnections.push(
+        { from: fromPoints.top, to: toPoints.bottom },
+        { from: fromPoints.right, to: toPoints.left },
+        { from: fromPoints.left, to: toPoints.right }
+      )
+    } else if (isChildBelow) {
+      bestConnections.push(
+        { from: fromPoints.bottom, to: toPoints.top },
+        { from: fromPoints.right, to: toPoints.left },
+        { from: fromPoints.left, to: toPoints.right }
+      )
+    }
+    
+    // Priority 5: All other combinations as fallback
+    const allCombinations = [
+      { from: fromPoints.bottom, to: toPoints.top },
+      { from: fromPoints.top, to: toPoints.bottom },
+      { from: fromPoints.right, to: toPoints.left },
+      { from: fromPoints.left, to: toPoints.right },
+      { from: fromPoints.right, to: toPoints.bottom },
+      { from: fromPoints.left, to: toPoints.bottom },
+      { from: fromPoints.right, to: toPoints.top },
+      { from: fromPoints.left, to: toPoints.top },
+      { from: fromPoints.bottom, to: toPoints.left },
+      { from: fromPoints.bottom, to: toPoints.right },
+      { from: fromPoints.top, to: toPoints.left },
+      { from: fromPoints.top, to: toPoints.right }
     ]
-
-    // Sort by priority and test for intersections
-    connectionOptions.sort((a, b) => a.priority - b.priority)
     
-    for (const option of connectionOptions) {
-      const startPoint = option.from
-      const endPoint = option.to
-      
-      // For straight lines, check direct connection
-      if (Math.abs(startPoint.x - endPoint.x) < 5 || Math.abs(startPoint.y - endPoint.y) < 5) {
-        if (!lineIntersectsCards(startPoint, endPoint)) {
-          return {
-            start: startPoint,
-            end: endPoint,
-            path: `M ${startPoint.x} ${startPoint.y} L ${endPoint.x} ${endPoint.y}`
-          }
-        }
+    // Add remaining combinations that aren't already in bestConnections
+    allCombinations.forEach(combo => {
+      const exists = bestConnections.some(bc => 
+        bc.from.x === combo.from.x && bc.from.y === combo.from.y &&
+        bc.to.x === combo.to.x && bc.to.y === combo.to.y
+      )
+      if (!exists) {
+        bestConnections.push(combo)
       }
-      
-      // For orthogonal routing
-      const midX = startPoint.x + (endPoint.x - startPoint.x) / 2
-      const midY = startPoint.y + (endPoint.y - startPoint.y) / 2
-      
-      // For vertical connections, add clearance from card edges
-      if (Math.abs(startPoint.x - endPoint.x) < 5) {
-        // Straight vertical line - add some clearance
-        const clearanceDistance = 25
-        let adjustedStartY = startPoint.y
-        let adjustedEndY = endPoint.y
-        
-        if (startPoint.y < endPoint.y) {
-          // Parent above child
-          adjustedStartY = startPoint.y + clearanceDistance
-          adjustedEndY = endPoint.y - clearanceDistance
-        } else {
-          // Child above parent  
-          adjustedStartY = startPoint.y - clearanceDistance
-          adjustedEndY = endPoint.y + clearanceDistance
-        }
-        
-        const path = `M ${startPoint.x} ${startPoint.y} L ${startPoint.x} ${adjustedStartY} L ${startPoint.x} ${adjustedEndY} L ${endPoint.x} ${endPoint.y}`
-        
-        if (!lineIntersectsCards({ x: startPoint.x, y: adjustedStartY }, { x: startPoint.x, y: adjustedEndY })) {
-          return {
-            start: startPoint,
-            end: endPoint,
-            path: path
-          }
-        }
-      }
-      
-      // Try simple L-shaped paths first (single direction change)
-      
-      // Try L-shaped path (horizontal first, then vertical)
-      const horizontalFirst = `M ${startPoint.x} ${startPoint.y} L ${endPoint.x} ${startPoint.y} L ${endPoint.x} ${endPoint.y}`
-      if (!lineIntersectsCards({ x: startPoint.x, y: startPoint.y }, { x: endPoint.x, y: startPoint.y }) &&
-          !lineIntersectsCards({ x: endPoint.x, y: startPoint.y }, { x: endPoint.x, y: endPoint.y })) {
+    })
+    
+    // Test each connection option
+    for (const { from: startPoint, to: endPoint } of bestConnections) {
+      // Try direct connection first (for very close cards or when no obstacles)
+      if (!lineIntersectsCards(startPoint, endPoint)) {
         return {
           start: startPoint,
           end: endPoint,
-          path: horizontalFirst
+          path: `M ${startPoint.x} ${startPoint.y} L ${endPoint.x} ${endPoint.y}`
         }
       }
       
-      // Try L-shaped path (vertical first, then horizontal)
-      const verticalFirst = `M ${startPoint.x} ${startPoint.y} L ${startPoint.x} ${endPoint.y} L ${endPoint.x} ${endPoint.y}`
-      if (!lineIntersectsCards({ x: startPoint.x, y: startPoint.y }, { x: startPoint.x, y: endPoint.y }) &&
-          !lineIntersectsCards({ x: startPoint.x, y: endPoint.y }, { x: endPoint.x, y: endPoint.y })) {
+      // Try L-shaped paths with minimal direction changes
+      
+      // Horizontal first, then vertical
+      const midPoint1 = { x: endPoint.x, y: startPoint.y }
+      if (!lineIntersectsCards(startPoint, midPoint1) && !lineIntersectsCards(midPoint1, endPoint)) {
         return {
           start: startPoint,
           end: endPoint,
-          path: verticalFirst
+          path: `M ${startPoint.x} ${startPoint.y} L ${endPoint.x} ${startPoint.y} L ${endPoint.x} ${endPoint.y}`
+        }
+      }
+      
+      // Vertical first, then horizontal
+      const midPoint2 = { x: startPoint.x, y: endPoint.y }
+      if (!lineIntersectsCards(startPoint, midPoint2) && !lineIntersectsCards(midPoint2, endPoint)) {
+        return {
+          start: startPoint,
+          end: endPoint,
+          path: `M ${startPoint.x} ${startPoint.y} L ${startPoint.x} ${endPoint.y} L ${endPoint.x} ${endPoint.y}`
         }
       }
     }
     
-    // Fallback: try to create a simple connection, preferring L-shapes over complex paths
+    // Final fallback: try a stepped route with more clearance
     const fallbackStart = fromPoints.bottom
     const fallbackEnd = toPoints.top
+    const clearanceDistance = 40
     
-    // First try simple L-shape fallback
-    const simpleFallback = `M ${fallbackStart.x} ${fallbackStart.y} L ${fallbackEnd.x} ${fallbackStart.y} L ${fallbackEnd.x} ${fallbackEnd.y}`
-    if (!lineIntersectsCards({ x: fallbackStart.x, y: fallbackStart.y }, { x: fallbackEnd.x, y: fallbackStart.y }) &&
-        !lineIntersectsCards({ x: fallbackEnd.x, y: fallbackStart.y }, { x: fallbackEnd.x, y: fallbackEnd.y })) {
-      return {
-        start: fallbackStart,
-        end: fallbackEnd,
-        path: simpleFallback
-      }
-    }
+    // Try stepped routing with waypoints to avoid obstacles
+    const waypoint1Y = fallbackStart.y + clearanceDistance
+    const waypoint2Y = fallbackEnd.y - clearanceDistance
     
-    // Complex fallback with stepped path only if simple L-shape doesn't work
-    const clearanceDistance = 35
-    const fallbackMidY = fallbackStart.y + clearanceDistance
+    const steppedPath = `M ${fallbackStart.x} ${fallbackStart.y} L ${fallbackStart.x} ${waypoint1Y} L ${fallbackEnd.x} ${waypoint1Y} L ${fallbackEnd.x} ${fallbackEnd.y}`
     
     return {
       start: fallbackStart,
       end: fallbackEnd,
-      path: `M ${fallbackStart.x} ${fallbackStart.y} L ${fallbackStart.x} ${fallbackMidY} L ${fallbackEnd.x} ${fallbackMidY} L ${fallbackEnd.x} ${fallbackEnd.y}`
+      path: steppedPath
     }
   }
 
