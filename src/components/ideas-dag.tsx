@@ -144,13 +144,13 @@ function ConnectionLine({ from, to, allPositions, allIdeas }: { from: Position; 
     
     // If parent has multiple children spread horizontally and child is above
     if (hasMultipleChildren && isChildAbove && (isChildToLeft || isChildToRight)) {
-      // Use side connections for better branching
+      // Use side connections for better branching with single direction change
       if (isChildToRight) {
-        // Connect from right side of parent to bottom of child
+        // Connect from right side of parent directly to bottom of child with L-shape
         const startPoint = fromPoints.right
         const endPoint = toPoints.bottom
-        const clearanceY = from.y - 30 // Go up before turning
-        const path = `M ${startPoint.x} ${startPoint.y} L ${startPoint.x + 20} ${startPoint.y} L ${startPoint.x + 20} ${clearanceY} L ${endPoint.x} ${clearanceY} L ${endPoint.x} ${endPoint.y}`
+        // Simple L-shaped path: go right, then up
+        const path = `M ${startPoint.x} ${startPoint.y} L ${endPoint.x} ${startPoint.y} L ${endPoint.x} ${endPoint.y}`
         
         return {
           start: startPoint,
@@ -158,11 +158,11 @@ function ConnectionLine({ from, to, allPositions, allIdeas }: { from: Position; 
           path: path
         }
       } else if (isChildToLeft) {
-        // Connect from left side of parent to bottom of child
+        // Connect from left side of parent directly to bottom of child with L-shape
         const startPoint = fromPoints.left
         const endPoint = toPoints.bottom
-        const clearanceY = from.y - 30 // Go up before turning
-        const path = `M ${startPoint.x} ${startPoint.y} L ${startPoint.x - 20} ${startPoint.y} L ${startPoint.x - 20} ${clearanceY} L ${endPoint.x} ${clearanceY} L ${endPoint.x} ${endPoint.y}`
+        // Simple L-shaped path: go left, then up
+        const path = `M ${startPoint.x} ${startPoint.y} L ${endPoint.x} ${startPoint.y} L ${endPoint.x} ${endPoint.y}`
         
         return {
           start: startPoint,
@@ -238,6 +238,8 @@ function ConnectionLine({ from, to, allPositions, allIdeas }: { from: Position; 
         }
       }
       
+      // Try simple L-shaped paths first (single direction change)
+      
       // Try L-shaped path (horizontal first, then vertical)
       const horizontalFirst = `M ${startPoint.x} ${startPoint.y} L ${endPoint.x} ${startPoint.y} L ${endPoint.x} ${endPoint.y}`
       if (!lineIntersectsCards({ x: startPoint.x, y: startPoint.y }, { x: endPoint.x, y: startPoint.y }) &&
@@ -259,24 +261,24 @@ function ConnectionLine({ from, to, allPositions, allIdeas }: { from: Position; 
           path: verticalFirst
         }
       }
-      
-      // Try stepped path with better clearance
-      const clearanceDistance = 35
-      const steppedPath = `M ${startPoint.x} ${startPoint.y} L ${startPoint.x} ${midY - clearanceDistance} L ${endPoint.x} ${midY - clearanceDistance} L ${endPoint.x} ${endPoint.y}`
-      if (!lineIntersectsCards({ x: startPoint.x, y: startPoint.y }, { x: startPoint.x, y: midY - clearanceDistance }) &&
-          !lineIntersectsCards({ x: startPoint.x, y: midY - clearanceDistance }, { x: endPoint.x, y: midY - clearanceDistance }) &&
-          !lineIntersectsCards({ x: endPoint.x, y: midY - clearanceDistance }, { x: endPoint.x, y: endPoint.y })) {
-        return {
-          start: startPoint,
-          end: endPoint,
-          path: steppedPath
-        }
+    }
+    
+    // Fallback: try to create a simple connection, preferring L-shapes over complex paths
+    const fallbackStart = fromPoints.bottom
+    const fallbackEnd = toPoints.top
+    
+    // First try simple L-shape fallback
+    const simpleFallback = `M ${fallbackStart.x} ${fallbackStart.y} L ${fallbackEnd.x} ${fallbackStart.y} L ${fallbackEnd.x} ${fallbackEnd.y}`
+    if (!lineIntersectsCards({ x: fallbackStart.x, y: fallbackStart.y }, { x: fallbackEnd.x, y: fallbackStart.y }) &&
+        !lineIntersectsCards({ x: fallbackEnd.x, y: fallbackStart.y }, { x: fallbackEnd.x, y: fallbackEnd.y })) {
+      return {
+        start: fallbackStart,
+        end: fallbackEnd,
+        path: simpleFallback
       }
     }
     
-    // Fallback to default connection with clearance
-    const fallbackStart = fromPoints.bottom
-    const fallbackEnd = toPoints.top
+    // Complex fallback with stepped path only if simple L-shape doesn't work
     const clearanceDistance = 35
     const fallbackMidY = fallbackStart.y + clearanceDistance
     
