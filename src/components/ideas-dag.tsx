@@ -127,14 +127,10 @@ function ConnectionLine({ from, to, allPositions, allIdeas }: { from: Position; 
     const fromPoints = getConnectionPoints(from)
     const toPoints = getConnectionPoints(to)
     
-    // Find the parent idea to check for multiple children
-    const parentIdea = allIdeas.find(idea => {
-      const parentPos = Object.entries(allPositions).find(([id, pos]) => pos === from)?.[0]
-      return idea.id === parentIdea
-    })
+    // Get the parent ID from the position
+    const parentId = Object.entries(allPositions).find(([id, pos]) => pos === from)?.[0]
     
     // Get all children of this parent
-    const parentId = Object.entries(allPositions).find(([id, pos]) => pos === from)?.[0]
     const childrenOfParent = allIdeas.filter(idea => idea.parentId === parentId)
     const hasMultipleChildren = childrenOfParent.length > 1
     
