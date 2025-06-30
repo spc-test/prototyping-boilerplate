@@ -58,14 +58,14 @@ export const TaskNetwork: React.FC<TaskNetworkProps> = ({ tasks }) => {
           if (childAtPosition) {
             const childPos = getTaskPosition(childAtPosition);
             
-            // Connection points (bottom center of parent to top center of child)
+            // Connection points (bottom center of child to top center of parent)
             const fromPosition = {
-              x: parentPos.x + CARD_WIDTH / 2,
-              y: parentPos.y + CARD_HEIGHT,
+              x: childPos.x + CARD_WIDTH / 2,
+              y: childPos.y + CARD_HEIGHT,
             };
             const toPosition = {
-              x: childPos.x + CARD_WIDTH / 2,
-              y: childPos.y,
+              x: parentPos.x + CARD_WIDTH / 2,
+              y: parentPos.y,
             };
             
             // Avoid duplicate connections to the same position
