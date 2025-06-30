@@ -135,29 +135,33 @@ export const TaskNetwork: React.FC = () => {
       </div>
       
       <div className="relative" style={{ width: '1200px', height: '900px' }}>
-        {/* Render connection lines first (behind cards) */}
-        {connections.map(connection => {
-          const fromTask = getTaskById(connection.from);
-          const toTask = getTaskById(connection.to);
-          
-          if (!fromTask || !toTask) return null;
-          
-          return (
-            <ConnectionLine
-              key={`${connection.from}-${connection.to}`}
-              from={fromTask.position}
-              to={toTask.position}
-            />
-          );
-        })}
+        {/* Container for connection lines */}
+        <div className="absolute inset-0" style={{ zIndex: 0 }}>
+          {connections.map(connection => {
+            const fromTask = getTaskById(connection.from);
+            const toTask = getTaskById(connection.to);
+            
+            if (!fromTask || !toTask) return null;
+            
+            return (
+              <ConnectionLine
+                key={`${connection.from}-${connection.to}`}
+                from={fromTask.position}
+                to={toTask.position}
+              />
+            );
+          })}
+        </div>
         
         {/* Render task cards */}
-        {mockTasks.map(task => (
-          <TaskCard
-            key={task.id}
-            {...task}
-          />
-        ))}
+        <div className="relative" style={{ zIndex: 2 }}>
+          {mockTasks.map(task => (
+            <TaskCard
+              key={task.id}
+              {...task}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
