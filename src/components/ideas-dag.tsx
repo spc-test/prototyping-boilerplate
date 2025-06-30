@@ -88,10 +88,10 @@ function IdeaCard({ idea, position }: { idea: Idea; position: Position }) {
 function ConnectionLine({ from, to, allPositions, allIdeas }: { from: Position; to: Position; allPositions: Record<string, Position>; allIdeas: Idea[] }) {
   // Get connection points for a card with proper clearance from edges
   const getConnectionPoints = (pos: Position) => ({
-    top: { x: pos.x + CARD_WIDTH / 2, y: pos.y - 5 },
-    bottom: { x: pos.x + CARD_WIDTH / 2, y: pos.y + CARD_HEIGHT + 5 },
-    left: { x: pos.x - 5, y: pos.y + CARD_HEIGHT / 2 },
-    right: { x: pos.x + CARD_WIDTH + 5, y: pos.y + CARD_HEIGHT / 2 }
+    top: { x: pos.x + CARD_WIDTH / 2, y: pos.y - 12 },
+    bottom: { x: pos.x + CARD_WIDTH / 2, y: pos.y + CARD_HEIGHT + 12 },
+    left: { x: pos.x - 12, y: pos.y + CARD_HEIGHT / 2 },
+    right: { x: pos.x + CARD_WIDTH + 12, y: pos.y + CARD_HEIGHT / 2 }
   })
 
   // Improved line-rectangle intersection detection
@@ -158,27 +158,53 @@ function ConnectionLine({ from, to, allPositions, allIdeas }: { from: Position; 
     const centerToCenter = Math.sqrt(deltaX * deltaX + deltaY * deltaY)
     
     // Determine optimal connection strategy based on card positions
-    const isChildToRight = deltaX > CARD_WIDTH * 0.3
-    const isChildToLeft = deltaX < -CARD_WIDTH * 0.3
-    const isChildAbove = deltaY < -CARD_HEIGHT * 0.3
-    const isChildBelow = deltaY > CARD_HEIGHT * 0.3
-    const isAlmostHorizontal = Math.abs(deltaY) < CARD_HEIGHT * 0.5
-    const isAlmostVertical = Math.abs(deltaX) < CARD_WIDTH * 0.5
+    const isChildToRight = deltaX > CARD_WIDTH * 0.2
+    const isChildToLeft = deltaX < -CARD_WIDTH * 0.2
+    const isChildAbove = deltaY < -CARD_HEIGHT * 0.2
+    const isChildBelow = deltaY > CARD_HEIGHT * 0.2
+    const isAlmostHorizontal = Math.abs(deltaY) < CARD_HEIGHT * 0.6
+    const isAlmostVertical = Math.abs(deltaX) < CARD_WIDTH * 0.6
+    const isDiagonallyPositioned = !isAlmostHorizontal && !isAlmostVertical
     // Smart connection point selection based on card positions
     let bestConnections = []
     
-    // Priority 1: For multiple children, use side connections when appropriate
-    if (hasMultipleChildren && isChildAbove && (isChildToLeft || isChildToRight)) {
-      if (isChildToRight) {
-        bestConnections.push({ from: fromPoints.right, to: toPoints.bottom })
+    // Priority 1: For diagonal positioning, strongly prefer side connections
+    if (isDiagonallyPositioned) {
+      if (isChildToRight && isChildAbove) {
+        // Child is above and to the right - prefer right-to-left connection
         bestConnections.push({ from: fromPoints.right, to: toPoints.left })
-      } else if (isChildToLeft) {
-        bestConnections.push({ from: fromPoints.left, to: toPoints.bottom })
+        bestConnections.push({ from: fromPoints.top, to: toPoints.left })
+        bestConnections.push({ from: fromPoints.right, to: toPoints.bottom })
+      } else if (isChildToLeft && isChildAbove) {
+        // Child is above and to the left - prefer left-to-right connection
         bestConnections.push({ from: fromPoints.left, to: toPoints.right })
+        bestConnections.push({ from: fromPoints.top, to: toPoints.right })
+        bestConnections.push({ from: fromPoints.left, to: toPoints.bottom })
+      } else if (isChildToRight && isChildBelow) {
+        // Child is below and to the right
+        bestConnections.push({ from: fromPoints.right, to: toPoints.left })
+        bestConnections.push({ from: fromPoints.bottom, to: toPoints.left })
+        bestConnections.push({ from: fromPoints.right, to: toPoints.top })
+      } else if (isChildToLeft && isChildBelow) {
+        // Child is below and to the left
+        bestConnections.push({ from: fromPoints.left, to: toPoints.right })
+        bestConnections.push({ from: fromPoints.bottom, to: toPoints.right })
+        bestConnections.push({ from: fromPoints.left, to: toPoints.top })
       }
     }
     
-    // Priority 2: For horizontal layouts, prefer side connections
+    // Priority 2: For multiple children, use side connections when appropriate
+    if (hasMultipleChildren && isChildAbove && (isChildToLeft || isChildToRight)) {
+      if (isChildToRight) {
+        bestConnections.push({ from: fromPoints.right, to: toPoints.left })
+        bestConnections.push({ from: fromPoints.right, to: toPoints.bottom })
+      } else if (isChildToLeft) {
+        bestConnections.push({ from: fromPoints.left, to: toPoints.right })
+        bestConnections.push({ from: fromPoints.left, to: toPoints.bottom })
+      }
+    }
+    
+    // Priority 3: For horizontal layouts, prefer side connections
     if (isAlmostHorizontal) {
       if (isChildToRight) {
         bestConnections.push({ from: fromPoints.right, to: toPoints.left })
@@ -191,7 +217,7 @@ function ConnectionLine({ from, to, allPositions, allIdeas }: { from: Position; 
       }
     }
     
-    // Priority 3: For vertical layouts, prefer top/bottom connections
+    // Priority 4: For vertical layouts, prefer top/bottom connections
     if (isAlmostVertical) {
       if (isChildAbove) {
         bestConnections.push({ from: fromPoints.top, to: toPoints.bottom })
@@ -200,12 +226,12 @@ function ConnectionLine({ from, to, allPositions, allIdeas }: { from: Position; 
       }
     }
     
-    // Priority 4: Standard combinations based on relative position
+    // Priority 5: Standard combinations based on relative position
     if (isChildAbove) {
       bestConnections.push(
-        { from: fromPoints.top, to: toPoints.bottom },
         { from: fromPoints.right, to: toPoints.left },
-        { from: fromPoints.left, to: toPoints.right }
+        { from: fromPoints.left, to: toPoints.right },
+        { from: fromPoints.top, to: toPoints.bottom }
       )
     } else if (isChildBelow) {
       bestConnections.push(
@@ -215,12 +241,12 @@ function ConnectionLine({ from, to, allPositions, allIdeas }: { from: Position; 
       )
     }
     
-    // Priority 5: All other combinations as fallback
+    // Priority 6: All other combinations as fallback
     const allCombinations = [
-      { from: fromPoints.bottom, to: toPoints.top },
-      { from: fromPoints.top, to: toPoints.bottom },
       { from: fromPoints.right, to: toPoints.left },
       { from: fromPoints.left, to: toPoints.right },
+      { from: fromPoints.bottom, to: toPoints.top },
+      { from: fromPoints.top, to: toPoints.bottom },
       { from: fromPoints.right, to: toPoints.bottom },
       { from: fromPoints.left, to: toPoints.bottom },
       { from: fromPoints.right, to: toPoints.top },
