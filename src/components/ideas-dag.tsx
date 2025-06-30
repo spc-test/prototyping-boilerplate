@@ -17,8 +17,8 @@ interface Position {
 
 const CARD_WIDTH = 280
 const CARD_HEIGHT = 100
-const HORIZONTAL_SPACING = 100
-const VERTICAL_SPACING = 120
+const HORIZONTAL_SPACING = 200
+const VERTICAL_SPACING = 180
 
 const creatorColors = {
   'Anna Baranova': 'bg-blue-50 border-blue-200',
@@ -91,9 +91,10 @@ function ConnectionLine({ from, to }: { from: Position; to: Position }) {
   const toX = to.x + CARD_WIDTH / 2
   const toY = to.y
 
+  // Create orthogonal path with 90-degree turns only
   const midY = fromY + (toY - fromY) / 2
   
-  const pathData = `M ${fromX} ${fromY} C ${fromX} ${midY} ${toX} ${midY} ${toX} ${toY}`
+  const pathData = `M ${fromX} ${fromY} L ${fromX} ${midY} L ${toX} ${midY} L ${toX} ${toY}`
 
   return (
     <g>
@@ -226,14 +227,14 @@ export default function IdeasDAG() {
             <defs>
               <marker
                 id="arrowhead"
-                markerWidth="10"
-                markerHeight="7"
-                refX="9"
-                refY="3.5"
+                markerWidth="6"
+                markerHeight="4"
+                refX="5"
+                refY="2"
                 orient="auto"
                 fill="#E0E0E0"
               >
-                <polygon points="0 0, 10 3.5, 0 7" />
+                <polyline points="0,0 5,2 0,4" fill="none" stroke="#E0E0E0" strokeWidth="1" />
               </marker>
             </defs>
             <g transform={`translate(${svgBounds.offsetX || 0}, ${svgBounds.offsetY || 0})`}>
