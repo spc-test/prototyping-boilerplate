@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect, useRef } from 'react'
 import { Button } from './ui/button'
 
 interface Idea {
@@ -17,7 +17,7 @@ interface Position {
 
 const CARD_WIDTH = 280
 const CARD_HEIGHT = 100
-const HORIZONTAL_SPACING = 200
+const MIN_HORIZONTAL_SPACING = 50
 const VERTICAL_SPACING = 180
 
 const creatorColors = {
@@ -112,7 +112,7 @@ function ConnectionLine({ from, to }: { from: Position; to: Position }) {
   )
 }
 
-function calculateLayout(ideas: Idea[]): Record<string, Position> {
+function calculateLayout(ideas: Idea[], containerWidth: number): Record<string, Position> {
   const positions: Record<string, Position> = {}
   const levels: Record<string, number> = {}
   const levelNodes: Record<number, string[]> = {}
@@ -151,32 +151,75 @@ function calculateLayout(ideas: Idea[]): Record<string, Position> {
   // Find the maximum level to invert the layout
   const maxLevel = Math.max(...Object.values(levels))
 
+  // Calculate responsive layout
+  const availableWidth = Math.max(containerWidth - 100, 400) // Leave some margin
+  let currentY = 50
+
   // Position nodes (inverted: root ideas at bottom, remixes grow upward)
-  Object.entries(levelNodes).forEach(([levelStr, nodeIds]) => {
-    const level = parseInt(levelStr)
-    const y = (maxLevel - level) * VERTICAL_SPACING + 50
-    
-    nodeIds.forEach((nodeId, index) => {
-      const totalWidth = nodeIds.length * CARD_WIDTH + (nodeIds.length - 1) * HORIZONTAL_SPACING
-      const startX = -totalWidth / 2 + 400 // Center around x=400
-      const x = startX + index * (CARD_WIDTH + HORIZONTAL_SPACING)
+  const levelYPositions: Record<number, number> = {}
+  
+  Object.entries(levelNodes)
+    .sort(([a], [b]) => parseInt(b) - parseInt(a)) // Start from highest level (top)
+    .forEach(([levelStr, nodeIds]) => {
+      const level = parseInt(levelStr)
       
-      positions[nodeId] = { x, y }
+      // Calculate how many cards can fit in one row
+      const maxCardsPerRow = Math.floor((availableWidth + MIN_HORIZONTAL_SPACING) / (CARD_WIDTH + MIN_HORIZONTAL_SPACING))
+      const cardsPerRow = Math.min(nodeIds.length, Math.max(1, maxCardsPerRow))
+      const rows = Math.ceil(nodeIds.length / cardsPerRow)
+      
+      // Calculate actual horizontal spacing
+      const actualHorizontalSpacing = cardsPerRow > 1 
+        ? Math.max(MIN_HORIZONTAL_SPACING, (availableWidth - cardsPerRow * CARD_WIDTH) / (cardsPerRow - 1))
+        : MIN_HORIZONTAL_SPACING
+      
+      levelYPositions[level] = currentY
+      
+      nodeIds.forEach((nodeId, index) => {
+        const row = Math.floor(index / cardsPerRow)
+        const col = index % cardsPerRow
+        const cardsInThisRow = Math.min(cardsPerRow, nodeIds.length - row * cardsPerRow)
+        
+        // Center the row
+        const rowWidth = cardsInThisRow * CARD_WIDTH + (cardsInThisRow - 1) * actualHorizontalSpacing
+        const startX = (availableWidth - rowWidth) / 2 + 50
+        const x = startX + col * (CARD_WIDTH + actualHorizontalSpacing)
+        const y = currentY + row * (CARD_HEIGHT + 60) // Extra spacing between rows within same level
+        
+        positions[nodeId] = { x, y }
+      })
+      
+      // Update currentY for next level
+      currentY += rows * (CARD_HEIGHT + 60) + VERTICAL_SPACING
     })
-  })
 
   return positions
 }
 
 export default function IdeasDAG() {
   const [selectedDataset, setSelectedDataset] = useState<keyof typeof sampleDatasets>('complex')
+  const [containerWidth, setContainerWidth] = useState(800)
+  const containerRef = useRef<HTMLDivElement>(null)
   
   const currentIdeas = sampleDatasets[selectedDataset]
-  const positions = useMemo(() => calculateLayout(currentIdeas), [currentIdeas])
+  const positions = useMemo(() => calculateLayout(currentIdeas, containerWidth), [currentIdeas, containerWidth])
+  
+  useEffect(() => {
+    const updateWidth = () => {
+      if (containerRef.current) {
+        setContainerWidth(containerRef.current.offsetWidth)
+      }
+    }
+    
+    updateWidth()
+    window.addEventListener('resize', updateWidth)
+    
+    return () => window.removeEventListener('resize', updateWidth)
+  }, [])
   
   const svgBounds = useMemo(() => {
     const allPositions = Object.values(positions)
-    if (allPositions.length === 0) return { width: 800, height: 600 }
+    if (allPositions.length === 0) return { width: containerWidth, height: 600 }
     
     const minX = Math.min(...allPositions.map(p => p.x)) - 50
     const maxX = Math.max(...allPositions.map(p => p.x + CARD_WIDTH)) + 50
@@ -184,12 +227,12 @@ export default function IdeasDAG() {
     const maxY = Math.max(...allPositions.map(p => p.y + CARD_HEIGHT)) + 50
     
     return {
-      width: Math.max(800, maxX - minX),
+      width: Math.max(containerWidth, maxX - minX),
       height: Math.max(600, maxY - minY),
       offsetX: Math.max(0, -minX),
       offsetY: Math.max(0, -minY)
     }
-  }, [positions])
+  }, [positions, containerWidth])
 
   return (
     <div className="w-full">
@@ -214,11 +257,11 @@ export default function IdeasDAG() {
         </div>
       </div>
 
-      <div className="border rounded-lg bg-white overflow-auto">
+      <div ref={containerRef} className="border rounded-lg bg-white overflow-auto">
         <div 
           className="relative"
           style={{
-            width: svgBounds.width,
+            width: '100%',
             height: svgBounds.height,
             minHeight: '400px'
           }}
@@ -226,7 +269,7 @@ export default function IdeasDAG() {
           {/* SVG for connection lines */}
           <svg
             className="absolute inset-0 pointer-events-none"
-            width={svgBounds.width}
+            width="100%"
             height={svgBounds.height}
           >
             <defs>
