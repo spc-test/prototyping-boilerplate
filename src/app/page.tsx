@@ -56,7 +56,7 @@ export default function Home() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 p-8">
+    <div className="min-h-screen bg-gradient-to-br from-violet-400 via-purple-500 to-indigo-600 p-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className={`text-center mb-12 ${isWiggling ? 'animate-bounce' : ''}`}>
