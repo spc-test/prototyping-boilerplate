@@ -307,6 +307,7 @@ export function IdeaDAG() {
               <ConnectionLine
                 key={`${connection.fromId}-${connection.toId}-${index}`}
                 waypoints={connection.waypoints}
+                color={connection.color}
               />
             ))}
           </svg>

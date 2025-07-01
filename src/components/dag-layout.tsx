@@ -30,6 +30,7 @@ export interface Connection {
   toX: number;
   toY: number;
   waypoints: { x: number; y: number }[];
+  color: string;
 }
 
 const CARD_WIDTH = 240;
@@ -37,6 +38,34 @@ const CARD_HEIGHT = 80;
 const LEVEL_SPACING = 120;
 const HORIZONTAL_SPACING = 60;
 const CONNECTION_OFFSET = 20; // Minimum distance from card edge for routing
+
+// Generate a distinct color for each connection
+function generateConnectionColor(index: number): string {
+  const colors = [
+    '#3B82F6', // Blue
+    '#10B981', // Green
+    '#F59E0B', // Yellow
+    '#EF4444', // Red
+    '#8B5CF6', // Purple
+    '#EC4899', // Pink
+    '#06B6D4', // Cyan
+    '#84CC16', // Lime
+    '#F97316', // Orange
+    '#6366F1', // Indigo
+    '#14B8A6', // Teal
+    '#A855F7', // Violet
+    '#F472B6', // Rose
+    '#22D3EE', // Light Blue
+    '#65A30D', // Green-600
+    '#DC2626', // Red-600
+    '#7C3AED', // Purple-600
+    '#DB2777', // Pink-600
+    '#0891B2', // Cyan-600
+    '#CA8A04'  // Yellow-600
+  ];
+  
+  return colors[index % colors.length];
+}
 
 // Helper function to get connection point coordinates
 function getConnectionPoint(node: PositionedNode, point: ConnectionPoint): { x: number; y: number } {
@@ -300,6 +329,7 @@ export function calculateDAGLayout(nodes: IdeaNode[]): {
   
   // Calculate connections with orthogonal routing
   const connections: Connection[] = [];
+  let connectionIndex = 0;
   nodes.forEach(node => {
     const nodePos = nodePositions.get(node.id);
     if (!nodePos || !node.parentId) return;
@@ -340,7 +370,8 @@ export function calculateDAGLayout(nodes: IdeaNode[]): {
       fromY: fromPos.y,
       toX: toPos.x,
       toY: toPos.y,
-      waypoints
+      waypoints,
+      color: generateConnectionColor(connectionIndex++)
     });
   });
   

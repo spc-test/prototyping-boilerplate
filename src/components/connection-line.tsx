@@ -1,8 +1,9 @@
 interface ConnectionLineProps {
   waypoints: { x: number; y: number }[];
+  color?: string;
 }
 
-export function ConnectionLine({ waypoints }: ConnectionLineProps) {
+export function ConnectionLine({ waypoints, color = "#D1D5DB" }: ConnectionLineProps) {
   if (waypoints.length < 2) return null;
   
   // Create orthogonal path from waypoints
@@ -15,7 +16,7 @@ export function ConnectionLine({ waypoints }: ConnectionLineProps) {
   return (
     <path
       d={path}
-      stroke="#D1D5DB"
+      stroke={color}
       strokeWidth="2"
       fill="none"
       strokeLinecap="round"
