@@ -104,30 +104,30 @@ function lineIntersectsCards(
   for (const card of cards) {
     if (excludeIds.includes(card.id)) continue;
     
-    // Check if line passes through card area
-    const cardLeft = card.x - 10;
-    const cardRight = card.x + CARD_WIDTH + 10;
-    const cardTop = card.y - 10;
-    const cardBottom = card.y + CARD_HEIGHT + 10;
+    // Check if line passes through card area (with larger margin for safety)
+    const cardLeft = card.x - 5;
+    const cardRight = card.x + CARD_WIDTH + 5;
+    const cardTop = card.y - 5;
+    const cardBottom = card.y + CARD_HEIGHT + 5;
     
     // For horizontal lines
-    if (p1.y === p2.y) {
+    if (Math.abs(p1.y - p2.y) < 1) { // Nearly horizontal
       const y = p1.y;
       const minX = Math.min(p1.x, p2.x);
       const maxX = Math.max(p1.x, p2.x);
       
-      if (y >= cardTop && y <= cardBottom && maxX >= cardLeft && minX <= cardRight) {
+      if (y > cardTop && y < cardBottom && maxX > cardLeft && minX < cardRight) {
         return true;
       }
     }
     
     // For vertical lines
-    if (p1.x === p2.x) {
+    if (Math.abs(p1.x - p2.x) < 1) { // Nearly vertical
       const x = p1.x;
       const minY = Math.min(p1.y, p2.y);
       const maxY = Math.max(p1.y, p2.y);
       
-      if (x >= cardLeft && x <= cardRight && maxY >= cardTop && minY <= cardBottom) {
+      if (x > cardLeft && x < cardRight && maxY > cardTop && minY < cardBottom) {
         return true;
       }
     }
@@ -149,147 +149,101 @@ function generateOrthogonalPath(
   const waypoints: { x: number; y: number }[] = [];
   const excludeIds = [fromNodeId, toNodeId];
   
-  // Add starting point
+  // Add starting point (connection point on the card edge)
   waypoints.push(from);
   
-  // Calculate intermediate waypoints based on connection directions
-  if (fromPoint === ConnectionPoint.BOTTOM && toPoint === ConnectionPoint.TOP) {
-    // Vertical connection - check if direct path is clear
-    if (from.x === to.x) {
-      // Check if direct vertical line intersects any cards
-      if (!lineIntersectsCards(from, to, allNodes, excludeIds)) {
-        waypoints.push(to);
-      } else {
-        // Route around obstacles
-        const midY = from.y + (to.y - from.y) / 2;
-        const offset = CONNECTION_OFFSET;
-        waypoints.push({ x: from.x, y: from.y + offset });
-        waypoints.push({ x: from.x + offset * 2, y: from.y + offset });
-        waypoints.push({ x: from.x + offset * 2, y: to.y - offset });
-        waypoints.push({ x: to.x, y: to.y - offset });
-        waypoints.push(to);
-      }
-    } else {
-      // L-shaped connection with clearance
-      const midY = from.y + Math.max(CONNECTION_OFFSET, (to.y - from.y) / 2);
-      const waypoint1 = { x: from.x, y: midY };
-      const waypoint2 = { x: to.x, y: midY };
-      
-      // Check if horizontal segment intersects cards
-      if (!lineIntersectsCards(waypoint1, waypoint2, allNodes, excludeIds)) {
-        waypoints.push(waypoint1);
-        waypoints.push(waypoint2);
-      } else {
-        // Route with extra clearance
-        const clearY = midY + CONNECTION_OFFSET;
-        waypoints.push({ x: from.x, y: clearY });
-        waypoints.push({ x: to.x, y: clearY });
-      }
-      waypoints.push(to);
-    }
-  } else if (fromPoint === ConnectionPoint.RIGHT && toPoint === ConnectionPoint.LEFT) {
-    // Horizontal connection
-    if (from.y === to.y) {
-      // Check if direct horizontal line is clear
-      if (!lineIntersectsCards(from, to, allNodes, excludeIds)) {
-        waypoints.push(to);
-      } else {
-        // Route around with vertical offset
-        const offset = CONNECTION_OFFSET;
-        waypoints.push({ x: from.x + offset, y: from.y });
-        waypoints.push({ x: from.x + offset, y: from.y - offset * 2 });
-        waypoints.push({ x: to.x - offset, y: from.y - offset * 2 });
-        waypoints.push({ x: to.x - offset, y: to.y });
-        waypoints.push(to);
-      }
-    } else {
-      // L-shaped connection
-      const midX = from.x + Math.max(CONNECTION_OFFSET, (to.x - from.x) / 2);
-      const waypoint1 = { x: midX, y: from.y };
-      const waypoint2 = { x: midX, y: to.y };
-      
-      if (!lineIntersectsCards(waypoint1, waypoint2, allNodes, excludeIds)) {
-        waypoints.push(waypoint1);
-        waypoints.push(waypoint2);
-      } else {
-        const clearX = midX + CONNECTION_OFFSET;
-        waypoints.push({ x: clearX, y: from.y });
-        waypoints.push({ x: clearX, y: to.y });
-      }
-      waypoints.push(to);
-    }
-  } else {
-    // Complex routing with proper offset and clearance
-    const offsetDistance = CONNECTION_OFFSET;
-    
-    // Create offset points that are guaranteed to be outside card boundaries
-    let startOffset = { ...from };
-    switch (fromPoint) {
-      case ConnectionPoint.TOP:
-        startOffset = { x: from.x, y: from.y - offsetDistance };
-        break;
-      case ConnectionPoint.BOTTOM:
-        startOffset = { x: from.x, y: from.y + offsetDistance };
-        break;
-      case ConnectionPoint.LEFT:
-        startOffset = { x: from.x - offsetDistance, y: from.y };
-        break;
-      case ConnectionPoint.RIGHT:
-        startOffset = { x: from.x + offsetDistance, y: from.y };
-        break;
-    }
-    waypoints.push(startOffset);
-    
-    let endOffset = { ...to };
-    switch (toPoint) {
-      case ConnectionPoint.TOP:
-        endOffset = { x: to.x, y: to.y - offsetDistance };
-        break;
-      case ConnectionPoint.BOTTOM:
-        endOffset = { x: to.x, y: to.y + offsetDistance };
-        break;
-      case ConnectionPoint.LEFT:
-        endOffset = { x: to.x - offsetDistance, y: to.y };
-        break;
-      case ConnectionPoint.RIGHT:
-        endOffset = { x: to.x + offsetDistance, y: to.y };
-        break;
-    }
-    
-    // Route between offset points with collision avoidance
-    if (startOffset.x !== endOffset.x && startOffset.y !== endOffset.y) {
-      // Determine routing priority based on connection points
-      if ((fromPoint === ConnectionPoint.TOP || fromPoint === ConnectionPoint.BOTTOM) &&
-          (toPoint === ConnectionPoint.LEFT || toPoint === ConnectionPoint.RIGHT)) {
-        // Route vertically first, then horizontally
-        const intermediate = { x: startOffset.x, y: endOffset.y };
-        if (!lineIntersectsCards(startOffset, intermediate, allNodes, excludeIds) &&
-            !lineIntersectsCards(intermediate, endOffset, allNodes, excludeIds)) {
-          waypoints.push(intermediate);
-        } else {
-          // Use alternative routing with extra clearance
-          const clearY = endOffset.y + (endOffset.y > startOffset.y ? offsetDistance : -offsetDistance);
-          waypoints.push({ x: startOffset.x, y: clearY });
-          waypoints.push({ x: endOffset.x, y: clearY });
-        }
-      } else {
-        // Route horizontally first, then vertically
-        const intermediate = { x: endOffset.x, y: startOffset.y };
-        if (!lineIntersectsCards(startOffset, intermediate, allNodes, excludeIds) &&
-            !lineIntersectsCards(intermediate, endOffset, allNodes, excludeIds)) {
-          waypoints.push(intermediate);
-        } else {
-          // Use alternative routing with extra clearance
-          const clearX = endOffset.x + (endOffset.x > startOffset.x ? offsetDistance : -offsetDistance);
-          waypoints.push({ x: clearX, y: startOffset.y });
-          waypoints.push({ x: clearX, y: endOffset.y });
-        }
-      }
-    }
-    
-    waypoints.push(endOffset);
-    waypoints.push(to);
+  // Create offset points that move away from the card edges
+  const offsetDistance = CONNECTION_OFFSET;
+  
+  let startOffset = { ...from };
+  switch (fromPoint) {
+    case ConnectionPoint.TOP:
+      startOffset = { x: from.x, y: from.y - offsetDistance };
+      break;
+    case ConnectionPoint.BOTTOM:
+      startOffset = { x: from.x, y: from.y + offsetDistance };
+      break;
+    case ConnectionPoint.LEFT:
+      startOffset = { x: from.x - offsetDistance, y: from.y };
+      break;
+    case ConnectionPoint.RIGHT:
+      startOffset = { x: from.x + offsetDistance, y: from.y };
+      break;
   }
+  waypoints.push(startOffset);
+  
+  let endOffset = { ...to };
+  switch (toPoint) {
+    case ConnectionPoint.TOP:
+      endOffset = { x: to.x, y: to.y - offsetDistance };
+      break;
+    case ConnectionPoint.BOTTOM:
+      endOffset = { x: to.x, y: to.y + offsetDistance };
+      break;
+    case ConnectionPoint.LEFT:
+      endOffset = { x: to.x - offsetDistance, y: to.y };
+      break;
+    case ConnectionPoint.RIGHT:
+      endOffset = { x: to.x + offsetDistance, y: to.y };
+      break;
+  }
+  
+  // Route between offset points with collision avoidance
+  if (Math.abs(startOffset.x - endOffset.x) > 1 && Math.abs(startOffset.y - endOffset.y) > 1) {
+    // Need intermediate waypoints for L-shaped routing
+    
+    // Determine routing priority based on connection points
+    if ((fromPoint === ConnectionPoint.TOP || fromPoint === ConnectionPoint.BOTTOM) &&
+        (toPoint === ConnectionPoint.LEFT || toPoint === ConnectionPoint.RIGHT)) {
+      // Route vertically first, then horizontally
+      const intermediate = { x: startOffset.x, y: endOffset.y };
+      if (!lineIntersectsCards(startOffset, intermediate, allNodes, excludeIds) &&
+          !lineIntersectsCards(intermediate, endOffset, allNodes, excludeIds)) {
+        waypoints.push(intermediate);
+      } else {
+        // Use alternative routing with extra clearance
+        const clearY = endOffset.y + (endOffset.y > startOffset.y ? offsetDistance : -offsetDistance);
+        waypoints.push({ x: startOffset.x, y: clearY });
+        waypoints.push({ x: endOffset.x, y: clearY });
+      }
+    } else if ((fromPoint === ConnectionPoint.LEFT || fromPoint === ConnectionPoint.RIGHT) &&
+               (toPoint === ConnectionPoint.TOP || toPoint === ConnectionPoint.BOTTOM)) {
+      // Route horizontally first, then vertically
+      const intermediate = { x: endOffset.x, y: startOffset.y };
+      if (!lineIntersectsCards(startOffset, intermediate, allNodes, excludeIds) &&
+          !lineIntersectsCards(intermediate, endOffset, allNodes, excludeIds)) {
+        waypoints.push(intermediate);
+      } else {
+        // Use alternative routing with extra clearance
+        const clearX = endOffset.x + (endOffset.x > startOffset.x ? offsetDistance : -offsetDistance);
+        waypoints.push({ x: clearX, y: startOffset.y });
+        waypoints.push({ x: clearX, y: endOffset.y });
+      }
+    } else {
+      // Same-direction connections (vertical-to-vertical or horizontal-to-horizontal)
+      if (fromPoint === ConnectionPoint.BOTTOM && toPoint === ConnectionPoint.TOP) {
+        // Vertical connection with potential horizontal jog
+        const midY = startOffset.y + (endOffset.y - startOffset.y) / 2;
+        if (Math.abs(startOffset.x - endOffset.x) > 10) {
+          // Need horizontal routing
+          waypoints.push({ x: startOffset.x, y: midY });
+          waypoints.push({ x: endOffset.x, y: midY });
+        }
+      } else if (fromPoint === ConnectionPoint.RIGHT && toPoint === ConnectionPoint.LEFT) {
+        // Horizontal connection with potential vertical jog
+        const midX = startOffset.x + (endOffset.x - startOffset.x) / 2;
+        if (Math.abs(startOffset.y - endOffset.y) > 10) {
+          // Need vertical routing
+          waypoints.push({ x: midX, y: startOffset.y });
+          waypoints.push({ x: midX, y: endOffset.y });
+        }
+      }
+    }
+  }
+  
+  // Add the end offset point and final destination
+  waypoints.push(endOffset);
+  waypoints.push(to);
   
   return waypoints;
 }
