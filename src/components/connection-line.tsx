@@ -1,17 +1,16 @@
 interface ConnectionLineProps {
-  fromX: number;
-  fromY: number;
-  toX: number;
-  toY: number;
+  waypoints: { x: number; y: number }[];
 }
 
-export function ConnectionLine({ fromX, fromY, toX, toY }: ConnectionLineProps) {
-  // Calculate control points for smooth bezier curve
-  const midY = fromY + (toY - fromY) / 2;
+export function ConnectionLine({ waypoints }: ConnectionLineProps) {
+  if (waypoints.length < 2) return null;
   
-  // Create path with smooth curves
-  const path = `M ${fromX} ${fromY} 
-                C ${fromX} ${midY} ${toX} ${midY} ${toX} ${toY}`;
+  // Create orthogonal path from waypoints
+  let path = `M ${waypoints[0].x} ${waypoints[0].y}`;
+  
+  for (let i = 1; i < waypoints.length; i++) {
+    path += ` L ${waypoints[i].x} ${waypoints[i].y}`;
+  }
 
   return (
     <path

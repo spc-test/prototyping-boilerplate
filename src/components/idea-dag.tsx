@@ -306,10 +306,7 @@ export function IdeaDAG() {
             {layout.connections.map((connection, index) => (
               <ConnectionLine
                 key={`${connection.fromId}-${connection.toId}-${index}`}
-                fromX={connection.fromX}
-                fromY={connection.fromY}
-                toX={connection.toX}
-                toY={connection.toY}
+                waypoints={connection.waypoints}
               />
             ))}
           </svg>
