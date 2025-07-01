@@ -4,7 +4,7 @@ export interface IdeaNode {
   author: string;
   createdAt: string;
   status: 'default' | 'active' | 'completed';
-  parentIds: string[];
+  parentId?: string;
 }
 
 export interface PositionedNode extends IdeaNode {
@@ -43,13 +43,13 @@ export function calculateDAGLayout(nodes: IdeaNode[]): {
   
   // Calculate in-degrees
   nodes.forEach(node => {
-    inDegree.set(node.id, node.parentIds.length);
+    inDegree.set(node.id, node.parentId ? 1 : 0);
   });
   
   // Find nodes with no parents (level 0)
   const queue: string[] = [];
   nodes.forEach(node => {
-    if (node.parentIds.length === 0) {
+    if (!node.parentId) {
       queue.push(node.id);
     }
   });
@@ -67,7 +67,7 @@ export function calculateDAGLayout(nodes: IdeaNode[]): {
         
         // Find children and reduce their in-degree
         nodes.forEach(child => {
-          if (child.parentIds.includes(nodeId)) {
+          if (child.parentId === nodeId) {
             const newInDegree = (inDegree.get(child.id) || 0) - 1;
             inDegree.set(child.id, newInDegree);
             if (newInDegree === 0) {
@@ -112,20 +112,18 @@ export function calculateDAGLayout(nodes: IdeaNode[]): {
   const connections: Connection[] = [];
   nodes.forEach(node => {
     const nodePos = nodePositions.get(node.id);
-    if (!nodePos) return;
+    if (!nodePos || !node.parentId) return;
     
-    node.parentIds.forEach(parentId => {
-      const parentPos = nodePositions.get(parentId);
-      if (!parentPos) return;
-      
-      connections.push({
-        fromId: parentId,
-        toId: node.id,
-        fromX: parentPos.x + CARD_WIDTH / 2,
-        fromY: parentPos.y + CARD_HEIGHT,
-        toX: nodePos.x + CARD_WIDTH / 2,
-        toY: nodePos.y
-      });
+    const parentPos = nodePositions.get(node.parentId);
+    if (!parentPos) return;
+    
+    connections.push({
+      fromId: node.parentId,
+      toId: node.id,
+      fromX: parentPos.x + CARD_WIDTH / 2,
+      fromY: parentPos.y + CARD_HEIGHT,
+      toX: nodePos.x + CARD_WIDTH / 2,
+      toY: nodePos.y
     });
   });
   

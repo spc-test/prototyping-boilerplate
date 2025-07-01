@@ -13,8 +13,7 @@ const testDatasets = {
       title: 'Create user authentication system',
       author: 'Alice Johnson',
       createdAt: '2 days ago',
-      status: 'completed' as const,
-      parentIds: []
+      status: 'completed' as const
     },
     {
       id: '2',
@@ -22,7 +21,7 @@ const testDatasets = {
       author: 'Bob Smith',
       createdAt: '1 day ago',
       status: 'active' as const,
-      parentIds: ['1']
+      parentId: '1'
     },
     {
       id: '3',
@@ -30,7 +29,7 @@ const testDatasets = {
       author: 'Carol Wilson',
       createdAt: '6 hours ago',
       status: 'default' as const,
-      parentIds: ['2']
+      parentId: '2'
     }
   ],
 
@@ -40,8 +39,7 @@ const testDatasets = {
       title: 'Design homepage layout',
       author: 'Design Team',
       createdAt: '3 days ago',
-      status: 'completed' as const,
-      parentIds: []
+      status: 'completed' as const
     },
     {
       id: '2',
@@ -49,7 +47,7 @@ const testDatasets = {
       author: 'Frontend Dev',
       createdAt: '2 days ago',
       status: 'completed' as const,
-      parentIds: ['1']
+      parentId: '1'
     },
     {
       id: '3',
@@ -57,7 +55,7 @@ const testDatasets = {
       author: 'UI Developer',
       createdAt: '2 days ago',
       status: 'active' as const,
-      parentIds: ['1']
+      parentId: '1'
     },
     {
       id: '4',
@@ -65,15 +63,23 @@ const testDatasets = {
       author: 'Frontend Dev',
       createdAt: '1 day ago',
       status: 'default' as const,
-      parentIds: ['1']
+      parentId: '1'
     },
     {
       id: '5',
-      title: 'Add responsive breakpoints',
+      title: 'Add responsive design for hero',
       author: 'CSS Specialist',
       createdAt: '8 hours ago',
       status: 'default' as const,
-      parentIds: ['2', '3']
+      parentId: '2'
+    },
+    {
+      id: '6',
+      title: 'Optimize navigation for mobile',
+      author: 'Mobile Dev',
+      createdAt: '6 hours ago',
+      status: 'default' as const,
+      parentId: '3'
     }
   ],
 
@@ -83,8 +89,7 @@ const testDatasets = {
       title: 'Project initialization',
       author: 'Tech Lead',
       createdAt: '1 week ago',
-      status: 'completed' as const,
-      parentIds: []
+      status: 'completed' as const
     },
     {
       id: '2',
@@ -92,7 +97,7 @@ const testDatasets = {
       author: 'Backend Dev',
       createdAt: '6 days ago',
       status: 'completed' as const,
-      parentIds: ['1']
+      parentId: '1'
     },
     {
       id: '3',
@@ -100,7 +105,7 @@ const testDatasets = {
       author: 'Backend Dev',
       createdAt: '5 days ago',
       status: 'completed' as const,
-      parentIds: ['2']
+      parentId: '2'
     },
     {
       id: '4',
@@ -108,7 +113,7 @@ const testDatasets = {
       author: 'Designer',
       createdAt: '6 days ago',
       status: 'completed' as const,
-      parentIds: ['1']
+      parentId: '1'
     },
     {
       id: '5',
@@ -116,7 +121,7 @@ const testDatasets = {
       author: 'Frontend Dev',
       createdAt: '4 days ago',
       status: 'active' as const,
-      parentIds: ['4']
+      parentId: '4'
     },
     {
       id: '6',
@@ -124,7 +129,7 @@ const testDatasets = {
       author: 'Backend Dev',
       createdAt: '3 days ago',
       status: 'active' as const,
-      parentIds: ['3']
+      parentId: '3'
     },
     {
       id: '7',
@@ -132,7 +137,7 @@ const testDatasets = {
       author: 'Frontend Dev',
       createdAt: '2 days ago',
       status: 'default' as const,
-      parentIds: ['5', '6']
+      parentId: '5'
     },
     {
       id: '8',
@@ -140,7 +145,7 @@ const testDatasets = {
       author: 'Full Stack Dev',
       createdAt: '2 days ago',
       status: 'default' as const,
-      parentIds: ['6']
+      parentId: '6'
     },
     {
       id: '9',
@@ -148,15 +153,31 @@ const testDatasets = {
       author: 'Data Engineer',
       createdAt: '1 day ago',
       status: 'default' as const,
-      parentIds: ['3']
+      parentId: '3'
     },
     {
       id: '10',
-      title: 'Mobile responsive design',
-      author: 'UI Developer',
+      title: 'User session management',
+      author: 'Security Dev',
       createdAt: '1 day ago',
       status: 'default' as const,
-      parentIds: ['7', '8']
+      parentId: '6'
+    },
+    {
+      id: '11',
+      title: 'Mobile login optimization',
+      author: 'Mobile Dev',
+      createdAt: '12 hours ago',
+      status: 'default' as const,
+      parentId: '7'
+    },
+    {
+      id: '12',
+      title: 'Profile photo upload',
+      author: 'UI Developer',
+      createdAt: '8 hours ago',
+      status: 'default' as const,
+      parentId: '8'
     }
   ],
 
@@ -166,8 +187,7 @@ const testDatasets = {
       title: 'Build todo list application',
       author: 'Original Creator',
       createdAt: '3 days ago',
-      status: 'completed' as const,
-      parentIds: []
+      status: 'completed' as const
     },
     {
       id: '2',
@@ -175,7 +195,7 @@ const testDatasets = {
       author: 'Remix Author',
       createdAt: '1 day ago',
       status: 'active' as const,
-      parentIds: ['1']
+      parentId: '1'
     }
   ],
 
@@ -185,8 +205,7 @@ const testDatasets = {
       title: 'Create weather widget',
       author: 'Weather Team',
       createdAt: '5 days ago',
-      status: 'completed' as const,
-      parentIds: []
+      status: 'completed' as const
     },
     {
       id: '2',
@@ -194,7 +213,7 @@ const testDatasets = {
       author: 'Forecast Dev',
       createdAt: '3 days ago',
       status: 'completed' as const,
-      parentIds: ['1']
+      parentId: '1'
     },
     {
       id: '3',
@@ -202,7 +221,7 @@ const testDatasets = {
       author: 'Data Analyst',
       createdAt: '3 days ago',
       status: 'active' as const,
-      parentIds: ['1']
+      parentId: '1'
     },
     {
       id: '4',
@@ -210,15 +229,31 @@ const testDatasets = {
       author: 'Alert System',
       createdAt: '2 days ago',
       status: 'default' as const,
-      parentIds: ['1']
+      parentId: '1'
     },
     {
       id: '5',
-      title: 'Integrate radar maps',
-      author: 'Map Developer',
+      title: 'Enhanced 7-day with charts',
+      author: 'Chart Developer',
+      createdAt: '2 days ago',
+      status: 'default' as const,
+      parentId: '2'
+    },
+    {
+      id: '6',
+      title: 'Hourly temp notifications',
+      author: 'Notification Dev',
       createdAt: '1 day ago',
       status: 'default' as const,
-      parentIds: ['2', '3']
+      parentId: '3'
+    },
+    {
+      id: '7',
+      title: 'Severe weather warnings',
+      author: 'Emergency Team',
+      createdAt: '1 day ago',
+      status: 'default' as const,
+      parentId: '4'
     }
   ]
 };
