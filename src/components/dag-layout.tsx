@@ -42,7 +42,7 @@ const CONNECTION_OFFSET = 40; // Minimum distance from card edge for routing
 // Generate a distinct color for each connection
 function generateConnectionColor(index: number): string {
   const colors = [
-    '#000000', // Green
+    '#000fff', // Green
   ];
 
   return colors[index % colors.length];
