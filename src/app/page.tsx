@@ -1,5 +1,9 @@
 export default function Home() {
   return (
-    <div></div>
+    <div className="flex min-h-screen items-center justify-center">
+      <h1 className="text-4xl font-bold text-center">
+        Welcome to your Next.js prototyping boilerplate!
+      </h1>
+    </div>
   )
 }
