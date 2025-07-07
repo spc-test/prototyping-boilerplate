@@ -1,14 +1,236 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Play, CheckCircle, Users, Zap, Target, Code, Eye, Share2, GitBranch, MessageSquare, Sparkles } from "lucide-react"
 import { Metadata } from "next"
+import { useState } from "react"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Label } from "@/components/ui/label"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Input } from "@/components/ui/input"
 
-export const metadata: Metadata = {
+// Note: metadata export moved to layout.tsx since this is now a client component
+const metadata = {
   title: "Matter by JetBrains - AI-Powered Prototyping Tool",
   description: "Prototype real features directly in your codebase and validate new ideas faster than ever with AI agent. No coding required.",
   keywords: ["AI prototyping", "JetBrains", "product development", "no-code", "team collaboration", "frontend development"],
 }
 
+interface WaitlistFormData {
+  role: string
+  companySize: string
+  productDevelopment: string[]
+  codingExperience: string
+  aiTooling: string[]
+  email: string
+  country: string
+}
+
 export default function MatterLandingPage() {
+  const [showWaitlist, setShowWaitlist] = useState(false)
+  const [formData, setFormData] = useState<WaitlistFormData>({
+    role: "",
+    companySize: "",
+    productDevelopment: [],
+    codingExperience: "",
+    aiTooling: [],
+    email: "",
+    country: ""
+  })
+
+  const handleProductDevelopmentChange = (value: string, checked: boolean) => {
+    setFormData(prev => ({
+      ...prev,
+      productDevelopment: checked 
+        ? [...prev.productDevelopment, value]
+        : prev.productDevelopment.filter(item => item !== value)
+    }))
+  }
+
+  const handleAiToolingChange = (value: string, checked: boolean) => {
+    setFormData(prev => ({
+      ...prev,
+      aiTooling: checked 
+        ? [...prev.aiTooling, value]
+        : prev.aiTooling.filter(item => item !== value)
+    }))
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    // Handle form submission
+    console.log('Form submitted:', formData)
+    // Here you would typically send the data to your backend
+  }
+
+  const WaitlistForm = () => (
+    <Card className="w-full max-w-2xl mx-auto">
+      <CardHeader>
+        <CardTitle className="text-2xl">Join the Matter Waitlist</CardTitle>
+        <CardDescription>
+          Help us build the perfect AI-powered prototyping tool for your needs
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Q1: Role */}
+          <div>
+            <Label className="text-base font-semibold mb-3 block">
+              Q1: What best describes your role?
+            </Label>
+            <RadioGroup
+              value={formData.role}
+              onValueChange={(value) => setFormData(prev => ({ ...prev, role: value }))}
+            >
+              {["Designer", "Product Manager", "Software Developer", "Marketer", "Founder / Entrepreneur", "Other"].map(role => (
+                <div key={role} className="flex items-center space-x-2">
+                  <RadioGroupItem value={role} id={`role-${role}`} />
+                  <Label htmlFor={`role-${role}`}>{role}</Label>
+                </div>
+              ))}
+            </RadioGroup>
+          </div>
+
+          {/* Q2: Company Size */}
+          <div>
+            <Label className="text-base font-semibold mb-3 block">
+              Q2: What's the size of your company?
+            </Label>
+            <RadioGroup
+              value={formData.companySize}
+              onValueChange={(value) => setFormData(prev => ({ ...prev, companySize: value }))}
+            >
+              {[
+                "Small Business (under 200 people)",
+                "Mid-size Company (200-1,000 people)",
+                "Large Enterprise (1,000+ people)",
+                "I work for a startup",
+                "I'm a freelancer/solo",
+                "I work for an agency or consultancy"
+              ].map(size => (
+                <div key={size} className="flex items-center space-x-2">
+                  <RadioGroupItem value={size} id={`size-${size}`} />
+                  <Label htmlFor={`size-${size}`}>{size}</Label>
+                </div>
+              ))}
+            </RadioGroup>
+          </div>
+
+          {/* Q3: Product Development */}
+          <div>
+            <Label className="text-base font-semibold mb-3 block">
+              Q3: What kind of product development are you involved in?
+            </Label>
+            <div className="space-y-2">
+              {[
+                "Web (e.g., websites or browser-based applications)",
+                "Desktop applications (e.g., software built for operating systems like Windows or macOS)",
+                "Mobile (e.g., iOS or Android applications)",
+                "Embedded systems or devices (e.g., interfaces for physical products or IoT)",
+                "None",
+                "Other"
+              ].map(type => (
+                <div key={type} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`product-${type}`}
+                    checked={formData.productDevelopment.includes(type)}
+                    onCheckedChange={(checked) => handleProductDevelopmentChange(type, checked as boolean)}
+                  />
+                  <Label htmlFor={`product-${type}`}>{type}</Label>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Q4: Coding Experience */}
+          <div>
+            <Label className="text-base font-semibold mb-3 block">
+              Q4: Do you have coding experience?
+            </Label>
+            <RadioGroup
+              value={formData.codingExperience}
+              onValueChange={(value) => setFormData(prev => ({ ...prev, codingExperience: value }))}
+            >
+              {[
+                "No",
+                "I have a basic understanding of the development workflow (self learning, bootcamps, etc.)",
+                "I have 0-1 years of professional coding experience",
+                "1-2 years of professional coding experience",
+                "3-5 years of professional coding experience",
+                "6+ years of professional coding experience"
+              ].map(experience => (
+                <div key={experience} className="flex items-center space-x-2">
+                  <RadioGroupItem value={experience} id={`experience-${experience}`} />
+                  <Label htmlFor={`experience-${experience}`}>{experience}</Label>
+                </div>
+              ))}
+            </RadioGroup>
+          </div>
+
+          {/* Q5: AI Tooling */}
+          <div>
+            <Label className="text-base font-semibold mb-3 block">
+              Q5: What AI tooling have you tried before? (Select all that apply)
+            </Label>
+            <div className="grid grid-cols-2 gap-2">
+              {[
+                "None", "ChatGPT", "Claude", "Replit", "Lovable", "Bolt", 
+                "V0", "Figma Make", "GitHub Copilot", "Cursor", "WindSurf", "Zed", "Other"
+              ].map(tool => (
+                <div key={tool} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`tool-${tool}`}
+                    checked={formData.aiTooling.includes(tool)}
+                    onCheckedChange={(checked) => handleAiToolingChange(tool, checked as boolean)}
+                  />
+                  <Label htmlFor={`tool-${tool}`}>{tool}</Label>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Q6: Email */}
+          <div>
+            <Label htmlFor="email" className="text-base font-semibold mb-3 block">
+              Q6: Your email
+            </Label>
+            <Input
+              id="email"
+              type="email"
+              value={formData.email}
+              onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+              placeholder="Enter your email address"
+              required
+            />
+          </div>
+
+          {/* Q7: Country */}
+          <div>
+            <Label htmlFor="country" className="text-base font-semibold mb-3 block">
+              Q7: Which country are you based in?
+            </Label>
+            <Input
+              id="country"
+              type="text"
+              value={formData.country}
+              onChange={(e) => setFormData(prev => ({ ...prev, country: e.target.value }))}
+              placeholder="Country will be auto-filled based on your location"
+            />
+          </div>
+
+          <div className="flex gap-4 pt-4">
+            <Button type="submit" className="flex-1">
+              Join Waitlist
+            </Button>
+            <Button type="button" variant="outline" onClick={() => setShowWaitlist(false)}>
+              Cancel
+            </Button>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
+  )
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
@@ -28,7 +250,7 @@ export default function MatterLandingPage() {
             Prototype real features directly in your codebase and validate new ideas faster than ever with AI agent. No coding required.
           </p>
           <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-            <Button size="lg" className="gap-2">
+            <Button size="lg" className="gap-2" onClick={() => setShowWaitlist(true)}>
               Join Waitlist <ArrowRight className="h-4 w-4" />
             </Button>
             <Button variant="outline" size="lg" className="gap-2">
@@ -86,7 +308,7 @@ export default function MatterLandingPage() {
           <div className="mt-16 text-center">
             <h3 className="mb-4 text-2xl font-bold">From idea to working prototype</h3>
             <p className="mb-8 text-xl text-muted-foreground">In minutes, not weeks</p>
-            <Button size="lg" className="gap-2">
+            <Button size="lg" className="gap-2" onClick={() => setShowWaitlist(true)}>
               Join Waitlist <ArrowRight className="h-4 w-4" />
             </Button>
           </div>
@@ -319,11 +541,20 @@ export default function MatterLandingPage() {
           <h2 className="mb-6 text-3xl font-bold text-primary-foreground md:text-4xl">
             Be among the first to experience AI-powered prototyping
           </h2>
-          <Button size="lg" variant="secondary" className="gap-2">
+          <Button size="lg" variant="secondary" className="gap-2" onClick={() => setShowWaitlist(true)}>
             Join Waitlist <ArrowRight className="h-4 w-4" />
           </Button>
         </div>
       </section>
+
+      {/* Waitlist Modal */}
+      {showWaitlist && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-background rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <WaitlistForm />
+          </div>
+        </div>
+      )}
     </div>
   )
 }
