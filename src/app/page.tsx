@@ -2,7 +2,7 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-8 bg-gradient-to-br from-blue-400 via-purple-500 to-pink-500">
       <div className="w-full max-w-md space-y-6">
-        <h1 className="text-2xl font-semibold text-center text-white drop-shadow-lg">What matters to you?</h1>
+        <h1 className="text-2xl font-semibold text-center text-white drop-shadow-lg">What do you want to build today?</h1>
         <input
           type="text"
           placeholder="Enter your idea..."
