@@ -108,17 +108,27 @@ export function TodoApp() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted/20 p-4">
       <div className="max-w-2xl mx-auto pt-8">
+        {/* Main Title Section */}
+        <div className="text-center mb-8">
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent mb-4">
+            My Todo App
+          </h1>
+          <p className="text-lg text-muted-foreground max-w-md mx-auto">
+            Stay organized, boost productivity, and get things done efficiently
+          </p>
+        </div>
+
         <Card className="shadow-lg">
           <CardHeader className="relative">
             <div className="absolute top-6 right-6">
               <ModeToggle />
             </div>
             <div className="text-center">
-              <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                Todo App
+              <CardTitle className="text-2xl font-semibold text-foreground">
+                Tasks Dashboard
               </CardTitle>
               <CardDescription>
-                Stay organized and get things done
+                Manage your daily tasks and track your progress
               </CardDescription>
             </div>
           </CardHeader>
