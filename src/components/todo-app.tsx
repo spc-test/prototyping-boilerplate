@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { TodoItem } from "@/components/todo-item"
 import { TodoFilters } from "@/components/todo-filters"
+import { ModeToggle } from "@/components/mode-toggle"
 import { Icons } from "@/components/icons"
 
 export function TodoApp() {
@@ -82,13 +83,18 @@ export function TodoApp() {
     <div className="min-h-screen bg-gradient-to-br from-background to-muted/20 p-4">
       <div className="max-w-2xl mx-auto pt-8">
         <Card className="shadow-lg">
-          <CardHeader className="text-center">
-            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-              Todo App
-            </CardTitle>
-            <CardDescription>
-              Stay organized and get things done
-            </CardDescription>
+          <CardHeader className="relative">
+            <div className="absolute top-6 right-6">
+              <ModeToggle />
+            </div>
+            <div className="text-center">
+              <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+                Todo App
+              </CardTitle>
+              <CardDescription>
+                Stay organized and get things done
+              </CardDescription>
+            </div>
           </CardHeader>
           
           <CardContent className="space-y-6">
