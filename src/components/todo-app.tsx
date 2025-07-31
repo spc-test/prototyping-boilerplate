@@ -105,6 +105,24 @@ export function TodoApp() {
     }
   }
 
+  // Get current time for dynamic messaging
+  const currentHour = new Date().getHours()
+  const getTimeBasedGreeting = () => {
+    if (currentHour < 12) return "Good morning! Start your day with purpose 🌅"
+    if (currentHour < 17) return "Good afternoon! Keep up the momentum ⚡"
+    return "Good evening! Finish strong and plan for tomorrow 🌙"
+  }
+
+  const getProgressMessage = () => {
+    if (todos.length === 0) return ""
+    const completionRate = Math.round((completedTodoCount / todos.length) * 100)
+    if (completionRate === 100) return `🎉 Perfect! You've completed all ${todos.length} tasks!`
+    if (completionRate >= 75) return `🔥 Amazing progress! ${completionRate}% complete`
+    if (completionRate >= 50) return `💪 Great work! You're ${completionRate}% done`
+    if (completionRate >= 25) return `🚀 Nice start! ${completionRate}% completed`
+    return `📝 Just getting started with ${todos.length} tasks`
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted/20 p-4">
       <div className="max-w-2xl mx-auto pt-8">
@@ -120,6 +138,25 @@ export function TodoApp() {
             <p className="text-sm text-muted-foreground">
               💡 <strong>Quick tip:</strong> Press Enter to add tasks quickly, click on any task to edit it, and use filters to stay focused!
             </p>
+          </div>
+          
+          {/* Dynamic motivational banner */}
+          <div className="mt-4 p-4 bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 rounded-lg border border-primary/20 max-w-xl mx-auto">
+            <div className="text-center space-y-2">
+              <p className="text-sm font-medium text-primary">
+                {getTimeBasedGreeting()}
+              </p>
+              {todos.length > 0 && (
+                <p className="text-xs text-muted-foreground">
+                  {getProgressMessage()}
+                </p>
+              )}
+              <div className="flex justify-center gap-4 text-xs text-muted-foreground mt-2">
+                <span>⌨️ Enter = Add</span>
+                <span>✏️ Click = Edit</span>
+                <span>🗑️ Delete = Remove</span>
+              </div>
+            </div>
           </div>
         </div>
 
