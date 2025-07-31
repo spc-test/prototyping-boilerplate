@@ -11,6 +11,19 @@ import { TodoFilters } from "@/components/todo-filters"
 import { ModeToggle } from "@/components/mode-toggle"
 import { Icons } from "@/components/icons"
 
+// Fallback UUID generation for older browsers
+function generateId(): string {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID()
+  }
+  // Fallback for older browsers
+  return 'xxxx-xxxx-4xxx-yxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0
+    const v = c === 'x' ? r : (r & 0x3 | 0x8)
+    return v.toString(16)
+  })
+}
+
 export function TodoApp() {
   const [todos, setTodos] = useLocalStorage<Todo[]>("todos", [])
   const [filter, setFilter] = useLocalStorage<FilterType>("todoFilter", "all")
@@ -19,26 +32,35 @@ export function TodoApp() {
   const addTodo = () => {
     if (newTodoText.trim() === "") return
 
-    const newTodo: Todo = {
-      id: crypto.randomUUID(),
-      text: newTodoText.trim(),
-      completed: false,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }
+    try {
+      const now = new Date()
+      const newTodo: Todo = {
+        id: generateId(),
+        text: newTodoText.trim(),
+        completed: false,
+        createdAt: now,
+        updatedAt: now,
+      }
 
-    setTodos(prev => [newTodo, ...prev])
-    setNewTodoText("")
+      setTodos(prev => [newTodo, ...prev])
+      setNewTodoText("")
+    } catch (error) {
+      console.error('Error adding todo:', error)
+    }
   }
 
   const toggleTodo = (id: string) => {
-    setTodos(prev =>
-      prev.map(todo =>
-        todo.id === id
-          ? { ...todo, completed: !todo.completed, updatedAt: new Date() }
-          : todo
+    try {
+      setTodos(prev =>
+        prev.map(todo =>
+          todo.id === id
+            ? { ...todo, completed: !todo.completed, updatedAt: new Date() }
+            : todo
+        )
       )
-    )
+    } catch (error) {
+      console.error('Error toggling todo:', error)
+    }
   }
 
   const deleteTodo = (id: string) => {
@@ -46,13 +68,17 @@ export function TodoApp() {
   }
 
   const updateTodo = (id: string, text: string) => {
-    setTodos(prev =>
-      prev.map(todo =>
-        todo.id === id
-          ? { ...todo, text, updatedAt: new Date() }
-          : todo
+    try {
+      setTodos(prev =>
+        prev.map(todo =>
+          todo.id === id
+            ? { ...todo, text, updatedAt: new Date() }
+            : todo
+        )
       )
-    )
+    } catch (error) {
+      console.error('Error updating todo:', error)
+    }
   }
 
   const clearCompleted = () => {

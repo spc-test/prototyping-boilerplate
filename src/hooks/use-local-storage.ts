@@ -11,10 +11,22 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
       // Get from local storage by key
       const item = window.localStorage.getItem(key)
       // Parse stored json or if none return initialValue
-      return item ? JSON.parse(item) : initialValue
+      if (item === null) {
+        return initialValue
+      }
+      const parsed = JSON.parse(item)
+      // Handle date objects in todos
+      if (Array.isArray(parsed)) {
+        return parsed.map(todo => ({
+          ...todo,
+          createdAt: todo.createdAt ? new Date(todo.createdAt) : new Date(),
+          updatedAt: todo.updatedAt ? new Date(todo.updatedAt) : new Date(),
+        }))
+      }
+      return parsed
     } catch (error) {
       // If error also return initialValue
-      console.log(error)
+      console.error('Error reading from localStorage:', error)
       return initialValue
     }
   })
@@ -33,7 +45,7 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
       }
     } catch (error) {
       // A more advanced implementation would handle the error case
-      console.log(error)
+      console.error('Error writing to localStorage:', error)
     }
   }
 
