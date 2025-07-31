@@ -128,9 +128,14 @@ export function TodoApp() {
       <div className="max-w-2xl mx-auto pt-8">
         {/* Main Title Section */}
         <div className="text-center mb-8">
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent mb-4">
-            My Todo App
-          </h1>
+          <div className="flex items-center justify-center gap-4 mb-4">
+            <div className="p-3 bg-gradient-to-br from-primary/20 to-primary/10 rounded-full border border-primary/20">
+              <Icons.logo className="h-8 w-8 text-primary" />
+            </div>
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
+              My Todo App
+            </h1>
+          </div>
           <p className="text-lg text-muted-foreground max-w-md mx-auto">
             Stay organized, boost productivity, and get things done efficiently
           </p>
