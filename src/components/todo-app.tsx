@@ -124,8 +124,15 @@ export function TodoApp() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-muted/20 p-4">
-      <div className="max-w-2xl mx-auto pt-8">
+    <div className="min-h-screen bg-gradient-to-br from-background to-muted/20 p-4 relative">
+      {/* Large decorative letter A in the center */}
+      <div className="fixed inset-0 flex items-center justify-center pointer-events-none z-0">
+        <div className="text-[40rem] font-bold text-muted-foreground/5 select-none">
+          A
+        </div>
+      </div>
+      
+      <div className="max-w-2xl mx-auto pt-8 relative z-10">
         {/* Main Title Section */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-4 mb-4">
