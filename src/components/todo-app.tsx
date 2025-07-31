@@ -116,6 +116,11 @@ export function TodoApp() {
           <p className="text-lg text-muted-foreground max-w-md mx-auto">
             Stay organized, boost productivity, and get things done efficiently
           </p>
+          <div className="mt-4 p-3 bg-muted/50 rounded-lg max-w-lg mx-auto">
+            <p className="text-sm text-muted-foreground">
+              💡 <strong>Quick tip:</strong> Press Enter to add tasks quickly, click on any task to edit it, and use filters to stay focused!
+            </p>
+          </div>
         </div>
 
         <Card className="shadow-lg">
@@ -137,7 +142,7 @@ export function TodoApp() {
             {/* Add new todo */}
             <div className="flex gap-2">
               <Input
-                placeholder="What needs to be done?"
+                placeholder="What needs to be done? (Press Enter to add quickly)"
                 value={newTodoText}
                 onChange={(e) => setNewTodoText(e.target.value)}
                 onKeyDown={handleKeyDown}
@@ -177,13 +182,15 @@ export function TodoApp() {
                   {filter === "all" && todos.length === 0 && (
                     <div>
                       <Icons.check className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                      <p>No todos yet. Add one above to get started!</p>
+                      <p className="text-lg mb-2">No todos yet. Add one above to get started!</p>
+                      <p className="text-sm">Start by adding your first task and take control of your day! 🚀</p>
                     </div>
                   )}
                   {filter === "active" && activeTodoCount === 0 && todos.length > 0 && (
                     <div>
                       <Icons.check className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                      <p>No active todos. Great job!</p>
+                      <p className="text-lg mb-2">No active todos. Great job! 🎉</p>
+                      <p className="text-sm">You've completed all your tasks. Time to celebrate or add more goals!</p>
                     </div>
                   )}
                   {filter === "completed" && completedTodoCount === 0 && (
@@ -209,7 +216,12 @@ export function TodoApp() {
             {/* Footer stats */}
             {todos.length > 0 && (
               <div className="text-center text-sm text-muted-foreground pt-4 border-t">
-                {activeTodoCount} active, {completedTodoCount} completed
+                <p>{activeTodoCount} active, {completedTodoCount} completed</p>
+                {completedTodoCount > 0 && (
+                  <p className="mt-1 text-xs">
+                    🎯 Keep going! You're making great progress on your goals.
+                  </p>
+                )}
               </div>
             )}
           </CardContent>
