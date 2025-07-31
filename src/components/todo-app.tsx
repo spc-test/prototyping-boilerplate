@@ -125,10 +125,10 @@ export function TodoApp() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted/20 p-4 relative">
-      {/* Large decorative letter D in the center */}
+      {/* Large decorative letter A in the center */}
       <div className="fixed inset-0 flex items-center justify-center pointer-events-none z-0">
         <div className="text-[40rem] font-bold text-muted-foreground/5 select-none">
-          D
+          A
         </div>
       </div>
       
