@@ -158,6 +158,23 @@ export function TodoApp() {
               </div>
             </div>
           </div>
+
+          {/* Productivity Tips Section */}
+          <div className="mt-4 p-3 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-950/20 dark:via-indigo-950/20 dark:to-purple-950/20 rounded-lg border border-blue-200/50 dark:border-blue-800/30 max-w-lg mx-auto">
+            <div className="text-center space-y-2">
+              <h3 className="text-sm font-semibold text-blue-700 dark:text-blue-300 flex items-center justify-center gap-2">
+                💡 Daily Productivity Tip
+              </h3>
+              <p className="text-xs text-blue-600 dark:text-blue-400 font-medium">
+                "Break large tasks into smaller, manageable chunks. This makes them less overwhelming and easier to complete!"
+              </p>
+              <div className="text-xs text-blue-500/70 dark:text-blue-400/70 flex justify-center gap-3 mt-2">
+                <span>🎯 Stay Focused</span>
+                <span>⏰ Take Breaks</span>
+                <span>🏆 Celebrate Wins</span>
+              </div>
+            </div>
+          </div>
         </div>
 
         <Card className="shadow-lg">
