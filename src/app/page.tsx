@@ -1,75 +1,75 @@
-"use client"
-
-import { useState } from "react"
 import { Button } from "@/components/ui/button"
 
-const jokes = [
-  "Why do programmers prefer dark mode? Because light attracts bugs! 🐛",
-  "How many programmers does it take to change a light bulb? None, that's a hardware problem! 💡",
-  "Why do Java developers wear glasses? Because they can't C# 👓",
-  "A SQL query goes into a bar, walks up to two tables and asks: 'Can I join you?' 🍺",
-  "Why don't programmers like nature? It has too many bugs! 🌿",
-  "There are only 10 types of people in the world: those who understand binary and those who don't 😄",
-  "Why did the programmer quit his job? He didn't get arrays! 📊",
-  "What's a programmer's favorite hangout place? Foo Bar! 🍻"
-]
-
 export default function Home() {
-  const [currentJoke, setCurrentJoke] = useState(0)
-  const [showJoke, setShowJoke] = useState(false)
-
-  const getRandomJoke = () => {
-    const randomIndex = Math.floor(Math.random() * jokes.length)
-    setCurrentJoke(randomIndex)
-    setShowJoke(true)
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-400 via-pink-500 to-red-500 flex items-center justify-center p-4">
-      <div className="max-w-2xl mx-auto text-center space-y-8">
-        <div className="animate-bounce">
-          <h1 className="text-6xl font-bold text-white mb-4">
-            🚀 Welcome to the Fun Zone! 🚀
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+      <div className="max-w-4xl mx-auto text-center space-y-12">
+        <div>
+          <h1 className="text-5xl font-bold text-slate-900 mb-6">
+            Next.js Prototyping Boilerplate
           </h1>
+          <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+            A modern starter template with Next.js 14+, TypeScript, Tailwind CSS, 
+            and shadcn/ui components to accelerate your development workflow.
+          </p>
         </div>
         
-        <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 shadow-2xl border border-white/20">
-          <h2 className="text-2xl font-semibold text-white mb-6">
-            Ready to prototype something awesome? 
-            <br />
-            <span className="text-yellow-300">Let's start with a laugh! 😂</span>
+        <div className="bg-white rounded-lg p-8 shadow-lg border border-slate-200">
+          <h2 className="text-2xl font-semibold text-slate-900 mb-6">
+            What's Included
           </h2>
           
-          <div className="space-y-6">
-            <p className="text-lg text-white/90">
-              This boilerplate is so good, it probably debugs itself! 
-              <span className="text-xl">✨</span>
-            </p>
-            
-            <Button 
-              onClick={getRandomJoke}
-              className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-3 px-6 rounded-full text-lg transform transition hover:scale-105"
-            >
-              Tell me a programming joke! 🎭
-            </Button>
-            
-            {showJoke && (
-              <div className="mt-6 p-6 bg-white/20 rounded-2xl border border-white/30 animate-pulse">
-                <p className="text-lg text-white font-medium">
-                  {jokes[currentJoke]}
-                </p>
+          <div className="grid md:grid-cols-2 gap-6 text-left">
+            <div className="space-y-3">
+              <div className="flex items-center space-x-3">
+                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                <span className="text-slate-700">Next.js 14+ with App Router</span>
               </div>
-            )}
+              <div className="flex items-center space-x-3">
+                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                <span className="text-slate-700">TypeScript Configuration</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                <span className="text-slate-700">Tailwind CSS Styling</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                <span className="text-slate-700">shadcn/ui Components</span>
+              </div>
+            </div>
+            <div className="space-y-3">
+              <div className="flex items-center space-x-3">
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <span className="text-slate-700">SEO Optimized</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <span className="text-slate-700">Type-safe Environment</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <span className="text-slate-700">Prettier Configuration</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <span className="text-slate-700">Production Ready</span>
+              </div>
+            </div>
+          </div>
+          
+          <div className="mt-8 space-x-4">
+            <Button className="bg-slate-900 hover:bg-slate-800 text-white px-6 py-2">
+              Get Started
+            </Button>
+            <Button variant="outline" className="px-6 py-2">
+              View Documentation
+            </Button>
           </div>
         </div>
         
-        <div className="text-white/70 text-sm">
-          <p>
-            🎯 Pro tip: While you're here having fun, your TypeScript is being extra type-safe!
-          </p>
-          <p className="mt-2">
-            Now go build something amazing! 🔥
-          </p>
+        <div className="text-slate-500 text-sm">
+          <p>Ready to build your next project with modern tools and best practices.</p>
         </div>
       </div>
     </div>
